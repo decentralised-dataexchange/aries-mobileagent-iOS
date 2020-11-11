@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = 'AriesMobileAgent-iOS'
   s.version          = '0.1.0'
-  s.summary          = 'A short description of AriesMobileAgent-iOS.'
+  s.summary          = 'Aries mobileagent iOS (AMA-i).'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,14 +18,14 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+This contains the Aries mobileagent iOS (AMA-i), an open source mobile agent for achieving self sovereign identity (SSI), created as part NGI-Trust eSSIF Lab, with efforts from iGrant.io, unikk.me, MyData etc.
                        DESC
 
-  s.homepage         = 'https://github.com/rebin@igrant.io/AriesMobileAgent-iOS'
+  s.homepage         = 'https://github.com/decentralised-dataexchange/aries-mobileagent-iOS'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'rebin@igrant.io' => 'rebin@bluecast.ae' }
-  s.source           = { :git => 'https://github.com/rebin@igrant.io/AriesMobileAgent-iOS.git', :tag => s.version.to_s }
+  s.author           = { 'rebin@igrant.io' => 'rebin@igrant.io' }
+  s.source           = { :git => 'https://github.com/decentralised-dataexchange/aries-mobileagent-iOS.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
