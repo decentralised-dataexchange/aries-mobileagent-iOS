@@ -25,7 +25,8 @@ This contains the Aries mobileagent iOS (AMA-i), an open source mobile agent for
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'rebin@igrant.io' => 'rebin@igrant.io' }
-  s.source           = { :git => 'https://github.com/decentralised-dataexchange/aries-mobileagent-iOS.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/decentralised-dataexchange/aries-mobileagent-iOS.git', :tag => s.version.to_s, }
+  s.source           = { :git => 'https://github.com/hyperledger/indy-sdk.git'}
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '11.0'
