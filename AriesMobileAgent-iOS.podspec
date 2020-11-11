@@ -28,7 +28,7 @@ This contains the Aries mobileagent iOS (AMA-i), an open source mobile agent for
   s.source           = { :git => 'https://github.com/decentralised-dataexchange/aries-mobileagent-iOS.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '11.0'
 
   s.source_files = 'AriesMobileAgent-iOS/Classes/**/*'
   
@@ -37,6 +37,15 @@ This contains the Aries mobileagent iOS (AMA-i), an open source mobile agent for
   # }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
+    s.frameworks = 'UIKit'
   # s.dependency 'AFNetworking', '~> 2.3'
+    s.dependency 'libindy'
+    s.dependency 'libsodium'
+    s.dependency 'libzmq'
+    s.dependency 'GRKOpenSSLFramework'
+    s.dependency 'CoreBitcoin'
+# , :podspec => 'https://raw.github.com/oleganza/CoreBitcoin/master/CoreBitcoin.podspec'
+    s.dependency 'IQKeyboardManagerSwift'
+    s.dependency 'SwiftMessages'
+  
 end
