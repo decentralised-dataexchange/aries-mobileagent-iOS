@@ -1,0 +1,25 @@
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
+
+target 'dataWallet' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  #use_frameworks!
+source 'https://github.com/hyperledger/indy-sdk.git'
+source 'https://github.com/CocoaPods/Specs.git'
+use_modular_headers!
+  # Pods for dataWallet
+    pod 'libindy'
+    pod 'libsodium'
+    pod 'libzmq'
+    pod 'GRKOpenSSLFramework'
+    pod 'CoreBitcoin'
+    pod 'IQKeyboardManagerSwift'
+    pod 'SwiftMessages'
+    pod 'Moya'
+    pod 'SVProgressHUD'
+    pod 'Kingfisher'
+    pod 'loady'
+    pod 'Localize-Swift'
+    pod 'ReachabilitySwift'
+
+end
