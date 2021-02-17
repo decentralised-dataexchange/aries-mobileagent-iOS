@@ -885,6 +885,7 @@ class AriesAgentFunctions {
             messageDict = [
                 "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/present-proof/1.0/propose-presentation",
                 "@id": AgentWrapper.shared.generateRandomId_BaseUID4(),
+                "qr_id":"",
                 "presentation_proposal": [
                   "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/present-proof/1.0/presentation-preview",
                     "attributes": attributes?.dictionary?["items"] ?? [String:Any](),
