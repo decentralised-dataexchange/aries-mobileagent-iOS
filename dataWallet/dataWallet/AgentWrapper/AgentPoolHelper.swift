@@ -165,6 +165,8 @@ struct AriesPoolHelper {
         let ledger = LedgerListViewController.ledgers[ledgerIndex]
         
         switch ledger {
+            case Constants.ledger_igrant_old_sandbox:
+                completion(Bundle.main.path(forResource: "igrant_old_sandbox_genesis", ofType: "txn") ?? "")
             case Constants.ledger_igrant_sandbox:
                 completion(Bundle.main.path(forResource: "igrant_sandbox_genesis", ofType: "txn") ?? "")
             case Constants.ledger_sovrin_builder:

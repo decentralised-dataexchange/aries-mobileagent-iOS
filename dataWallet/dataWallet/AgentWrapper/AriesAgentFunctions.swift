@@ -73,6 +73,7 @@ enum WalletSearch {
     case checkExistingConnection
     case inbox_offerRecieved
     case searchWithOrgId
+    case searchWithMyVerKey
 }
 
 class AriesAgentFunctions {
@@ -91,7 +92,7 @@ class AriesAgentFunctions {
     static var walletCertificates = "wallet_cert"
     static var inbox = "inbox"
     
-    func addWalletRecord(invitationKey: String = "", threadID: String = "", label: String = "",serviceEndPoint: String = "", connectionRecordId: String?, certIssueModel: CertificateIssueModel? = nil, imageURL:String = "", reciepientKey: String? = "", presentationExchangeModel: PresentationRequestWalletRecordModel? = PresentationRequestWalletRecordModel.init(),walletCert: CustomWalletRecordCertModel? = nil,connectionModel:CloudAgentConnectionWalletModel? = CloudAgentConnectionWalletModel(),orgRecordId: String? = "", walletHandler: IndyHandle,type: AddWalletType,routingKey: String = "",orgID: String? = "", completion: @escaping (Bool,String,Error?) -> Void){ //Success,connectionRecordId,error
+    func addWalletRecord(invitationKey: String = "", threadID: String = "", label: String = "",serviceEndPoint: String = "", connectionRecordId: String?,myVerKey: String? = "", certIssueModel: CertificateIssueModel? = nil, imageURL:String = "", reciepientKey: String? = "", presentationExchangeModel: PresentationRequestWalletRecordModel? = PresentationRequestWalletRecordModel.init(),walletCert: CustomWalletRecordCertModel? = nil,connectionModel:CloudAgentConnectionWalletModel? = CloudAgentConnectionWalletModel(),orgRecordId: String? = "", walletHandler: IndyHandle,type: AddWalletType,routingKey: String = "",orgID: String? = "", completion: @escaping (Bool,String,Error?) -> Void){ //Success,connectionRecordId,error
         var value = [String : Any?]()
         var recordType = ""
         var tagJson = [String : Any?]()
@@ -119,7 +120,8 @@ class AriesAgentFunctions {
             tagJson = [
                 "invitation_key": invitationKey,
                 "routing_key" : routingKey,
-                "orgID": orgID ?? ""
+                "orgID": orgID ?? "",
+                "myVerKey": myVerKey
             ] as [String : Any?]
             
             recordType = type == .mediatorConnection ? AriesAgentFunctions.mediatorConnection : "connection"
@@ -338,7 +340,7 @@ class AriesAgentFunctions {
         }
     }
     
-    func updateWalletRecord(walletHandler: IndyHandle,recipientKey: String = "", label: String = "",type: UpdateWalletType, id: String,theirDid: String = "", myDid: String = "",imageURL: String = "", invitiationKey: String? = "",isIgrantAgent: Bool? = false,certModel: SearchCertificateRecord = SearchCertificateRecord.init(),routingKey: String? = "", presentationReqModel: PresentationRequestWalletRecordModel? = nil,orgDetails:OrganisationInfoModel? = nil, orgID: String? = "", completion: @escaping(Bool,String,Error?) -> Void) {
+    func updateWalletRecord(walletHandler: IndyHandle,recipientKey: String = "", label: String = "",type: UpdateWalletType, id: String,theirDid: String = "", myDid: String = "",imageURL: String = "", invitiationKey: String? = "",isIgrantAgent: Bool? = false,certModel: SearchCertificateRecord = SearchCertificateRecord.init(),routingKey: [String]? = [], presentationReqModel: PresentationRequestWalletRecordModel? = nil,orgDetails:OrganisationInfoModel? = nil, orgID: String? = "", completion: @escaping(Bool,String,Error?) -> Void) {
         //let updateAndWalletId = AgentWrapper.shared.generateRandomId_BaseUID4()
         var updateWalletRecord = [String : Any?]()
         var walletType = AriesAgentFunctions.mediatorConnection
@@ -506,7 +508,7 @@ class AriesAgentFunctions {
     }
     
     func updateWalletTags(walletHandler: IndyHandle,id: String?, myDid: String? = "", theirDid: String? = "",recipientKey: String? = "",
-                          serviceEndPoint: String? = "",invitiationKey: String? = "",type: UpdateWalletTagType,threadId: String? = "",isIgrantAgent: Bool? = false, state: String? = "",routingKey: String? = "",orgID: String? = "", completion: @escaping(Bool,Error?) -> Void){
+                          serviceEndPoint: String? = "",invitiationKey: String? = "",type: UpdateWalletTagType,threadId: String? = "",isIgrantAgent: Bool? = false, state: String? = "",routingKey: String? = "",orgID: String? = "",myVerKey:String? = "", completion: @escaping(Bool,Error?) -> Void){
         var tagsJson = [String:Any?]()
         var walletType = AriesAgentFunctions.mediatorConnection
         
@@ -537,7 +539,8 @@ class AriesAgentFunctions {
                 "invitation_key": invitiationKey ?? "",
                 "reciepientKey": recipientKey ?? "",
                 "routing_key" : routingKey,
-                "orgID": orgID ?? ""
+                "orgID": orgID ?? "",
+                "myVerKey": myVerKey
             ]
             walletType = AriesAgentFunctions.cloudAgentConnection
         case .initialCloudAgent:
@@ -550,7 +553,8 @@ class AriesAgentFunctions {
                 "reciepientKey" : recipientKey ?? "",
                 "isIgrantAgent": (isIgrantAgent ?? false) ? "1" : "0",
                 "state": "request",
-                "orgID": orgID ?? ""
+                "orgID": orgID ?? "",
+                "myVerKey": myVerKey
             ]
             walletType = AriesAgentFunctions.cloudAgentConnection
         case .mediatorActive:
@@ -572,7 +576,8 @@ class AriesAgentFunctions {
             "state": "active",
                 "routing_key" : routingKey,
             "isIgrantAgent": (isIgrantAgent ?? false) ? "1" : "0",
-                "orgID": orgID ?? ""
+                "orgID": orgID ?? "",
+                "myVerKey": myVerKey
                 ]
             walletType = AriesAgentFunctions.cloudAgentConnection
         case .issueCredential:
@@ -634,7 +639,7 @@ class AriesAgentFunctions {
         }
     }
     
-    func openWalletSearch_type(walletHandler: IndyHandle,type:String, searchType: WalletSearch, invitationKey: String = "", serviceEndPoint: String = "", record_id: String = "",didKey: String = "",threadId: String = "",myDid:String = "",theirDid:String = "",reciepientKey: String = "", orgID:String = "", completion: @escaping(Bool,IndyHandle,Error?) -> Void){
+    func openWalletSearch_type(walletHandler: IndyHandle,type:String, searchType: WalletSearch, invitationKey: String = "", serviceEndPoint: String = "", record_id: String = "",didKey: String = "",threadId: String = "",myDid:String = "",theirDid:String = "",reciepientKey: String = "", orgID:String = "",myVerKey:String = "", completion: @escaping(Bool,IndyHandle,Error?) -> Void){
         var queryDic = [String:Any]()
         switch searchType {
         case .withoutQuery: break
@@ -687,6 +692,10 @@ class AriesAgentFunctions {
                 "orgID" : orgID ?? "",
                 "state": "active",
             ]
+            case .searchWithMyVerKey:
+                queryDic = [
+                    "myVerKey": myVerKey
+                ]
         }
         
         
@@ -720,7 +729,7 @@ class AriesAgentFunctions {
         }
     }
     
-    func packMessage(walletHandler: IndyHandle,label: String = "",recipientKey: String,id: String = "", myDid: String = "", myVerKey: String,serviceEndPoint: String = "",routingKey: String = "",routedestination: String? = "",deleteItemId: String = "",threadId: String? = "",credReq: String? = "",attributes: ProofExchangeAttributesArray? = nil, type: PackMessageType,isRoutingKeyEnabled:Bool, externalRoutingKey: String = "",presentation: PRPresentation? = nil,theirDid: String? = "", completion: @escaping (Bool,Data?,Error?) -> Void){
+    func packMessage(walletHandler: IndyHandle,label: String = "",recipientKey: String,id: String = "", myDid: String = "", myVerKey: String,serviceEndPoint: String = "",routingKey: String = "",routedestination: String? = "",deleteItemId: String = "",threadId: String? = "",credReq: String? = "",attributes: ProofExchangeAttributesArray? = nil, type: PackMessageType,isRoutingKeyEnabled:Bool, externalRoutingKey: [String]? = [],presentation: PRPresentation? = nil,theirDid: String? = "",QR_ID:String? = "", completion: @escaping (Bool,Data?,Error?) -> Void){
         var messageDict = [String : Any?]()
         switch type {
         case .initialMediator :
@@ -885,7 +894,7 @@ class AriesAgentFunctions {
             messageDict = [
                 "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/present-proof/1.0/propose-presentation",
                 "@id": AgentWrapper.shared.generateRandomId_BaseUID4(),
-                "qr_id":"",
+                "qr_id":QR_ID,
                 "presentation_proposal": [
                   "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/present-proof/1.0/presentation-preview",
                     "attributes": attributes?.dictionary?["items"] ?? [String:Any](),
@@ -958,7 +967,7 @@ class AriesAgentFunctions {
         if isRoutingKeyEnabled {
             AgentWrapper.shared.packMessage(message: messageData, myKey: myVerKey, recipientKey: "[\"\(recipientKey)\"]", walletHandle: walletHandler) { (error, data) in
                 print("pack message")
-                self.forwardMessagePack(walletHandler: walletHandler, message: data ?? Data(), recipient_key: recipientKey, routingKey: externalRoutingKey, myVerKey: myVerKey, completion: completion)
+                self.forwardMessagePack(walletHandler: walletHandler, message: data ?? Data(), recipient_key: recipientKey, routingKey: externalRoutingKey ?? [], myVerKey: myVerKey, completion: completion)
             }
         } else {
             AgentWrapper.shared.packMessage(message: messageData, myKey: myVerKey, recipientKey: "[\"\(recipientKey)\"]", walletHandle: walletHandler) { (error, data) in
@@ -1067,25 +1076,31 @@ class AriesAgentFunctions {
         })
     }
    
-    func forwardMessagePack(walletHandler: IndyHandle,message: Data,recipient_key: String,routingKey: String, myVerKey:String, completion: @escaping (Bool,Data?,Error?) -> Void) {
+    func forwardMessagePack(walletHandler: IndyHandle,message: Data,recipient_key: String,routingKey: [String], myVerKey:String,count:Int = 0, completion: @escaping (Bool,Data?,Error?) -> Void) {
+      
         var messageDict = [String : Any?]()
         let message = String(decoding: message, as: UTF8.self)
-
         messageDict = [
                     "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/routing/1.0/forward",
                     "@id": AgentWrapper.shared.generateRandomId_BaseUID4(),
-                    "to": recipient_key,
-                    "msg": message
+            "to": count == 0 ? recipient_key : routingKey[count - 1],
+            "msg": UIApplicationUtils.shared.convertToDictionary(text: message)
             ]
         let messageJsonString = UIApplicationUtils.shared.getJsonString(for: messageDict)
         let messageData = Data(messageJsonString.utf8)
-        AgentWrapper.shared.packMessage(message: messageData, myKey: myVerKey, recipientKey: "[\"\(routingKey)\"]", walletHandle: walletHandler) { (error, data) in
+        
+        AgentWrapper.shared.packMessage(message: messageData, myKey: myVerKey, recipientKey: "[\"\(routingKey[count])\"]", walletHandle: walletHandler) { (error, data) in
             print("pack message")
-            if(error?._code != 0) {
-                completion(false,data,error)
-                return;
-            }
-            completion(true,data,error)
+           
+            if count == routingKey.count - 1 {
+                if(error?._code != 0) {
+                    completion(false,data,error)
+                    return;
+                }
+                completion(true,data,error)
+            } else {
+                self.forwardMessagePack(walletHandler: walletHandler, message: data ?? Data(), recipient_key: recipient_key, routingKey: routingKey, myVerKey: myVerKey,count: count + 1, completion: completion)
         }
+    }
     }
 }

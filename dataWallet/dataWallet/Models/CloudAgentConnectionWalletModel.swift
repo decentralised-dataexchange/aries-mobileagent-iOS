@@ -18,7 +18,7 @@ struct CloudAgentConnectionWalletModel: Codable {
 
 // MARK: - CloudAgentConnectionTags
 struct CloudAgentConnectionTags: Codable {
-    let theirDid, invitationKey, requestID, myDid, orgId: String?
+    let theirDid, invitationKey, requestID, myDid, orgId, myVerKey: String?
 
     enum CodingKeys: String, CodingKey {
         case theirDid = "their_did"
@@ -26,6 +26,7 @@ struct CloudAgentConnectionTags: Codable {
         case requestID = "request_id"
         case myDid = "my_did"
         case orgId
+        case myVerKey
     }
 }
 
@@ -44,7 +45,7 @@ class CloudAgentConnectionValue: Codable {
     let imageURL: String?
     let reciepientKey: String?
     let isIgrantAgent: String?
-    let routingKey: String?
+    let routingKey: [String]?
     let orgDetails: OrganisationInfoModel?
     let orgId: String?
 

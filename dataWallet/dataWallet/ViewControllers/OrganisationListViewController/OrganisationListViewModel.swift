@@ -43,7 +43,7 @@ class OrganisationListViewModel {
         }
     }
     
-    func newConnectionConfigCloudAgent(label: String, theirVerKey: String,serviceEndPoint: String, routingKey: String, imageURL: String,completion:@escaping(Bool)-> Void) {
+    func newConnectionConfigCloudAgent(label: String, theirVerKey: String,serviceEndPoint: String, routingKey: [String], imageURL: String,completion:@escaping(Bool)-> Void) {
         let walletHandler = self.walletHandle ?? IndyHandle()
         ConnectionPopupViewController.showConnectionPopup(orgName: label, orgImageURL: imageURL, walletHandler: walletHandler, recipientKey: theirVerKey, serviceEndPoint: serviceEndPoint, routingKey: routingKey, isFromDataExchange: false) { [unowned self] (connModel,recipientKey,myVerKey) in
             completion(true)

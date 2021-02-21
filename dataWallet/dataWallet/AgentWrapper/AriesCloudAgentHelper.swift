@@ -12,7 +12,7 @@ struct AriesCloudAgentHelper{
     static var shared = AriesCloudAgentHelper()
     static var onTrustPingSuccessBlock : ((CloudAgentConnectionWalletModel?,String?,String?)-> Void)?
     private init(){}
-    private static var routerKey:String?
+    private static var routerKey:[String]?
     private static var OrgID: String?
     private static var orgDetails: OrganisationInfoModel?
 }
@@ -21,21 +21,21 @@ struct AriesCloudAgentHelper{
 
 extension AriesCloudAgentHelper {
     
-    func newConnectionConfigCloudAgent(walletHandler: IndyHandle, label: String, theirVerKey: String,serviceEndPoint: String, routingKey: String, imageURL: String,pollingEnabled: Bool = true, orgId: String?, orgDetails: OrganisationInfoModel? ,completion: @escaping((CloudAgentConnectionWalletModel?,String?,String?) -> Void)){
+    func newConnectionConfigCloudAgent(walletHandler: IndyHandle, label: String, theirVerKey: String,serviceEndPoint: String, routingKey: [String]?, imageURL: String,pollingEnabled: Bool = true, orgId: String?, orgDetails: OrganisationInfoModel? ,completion: @escaping((CloudAgentConnectionWalletModel?,String?,String?) -> Void)){
         NetworkManager.shared.baseURL = serviceEndPoint
         AriesCloudAgentHelper.onTrustPingSuccessBlock = completion
         AriesCloudAgentHelper.routerKey = routingKey
         AriesCloudAgentHelper.OrgID = orgId
         AriesCloudAgentHelper.orgDetails = orgDetails
-        AriesAgentFunctions.shared.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.cloudAgentConnection, searchType: .checkExistingConnection, invitationKey: theirVerKey) { (success, searchInvitationHandler, error) in
-            AriesAgentFunctions.shared.fetchWalletSearchNextRecords(walletHandler: walletHandler, searchWalletHandler: searchInvitationHandler) { (fetchSuccess, results, error) in
-                let resultDict = UIApplicationUtils.shared.convertToDictionary(text: results)
-                let count = resultDict?["totalCount"] as? Int ?? 0
-                if (count > 0){
-                    UIApplicationUtils.showSuccessSnackbar(message: "Connection already existing".localized())
-                    completion(CloudAgentConnectionWalletModel.init(),"","")
-                    return
-                }
+//        AriesAgentFunctions.shared.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.cloudAgentConnection, searchType: .checkExistingConnection, invitationKey: theirVerKey) { (success, searchInvitationHandler, error) in
+//            AriesAgentFunctions.shared.fetchWalletSearchNextRecords(walletHandler: walletHandler, searchWalletHandler: searchInvitationHandler) { (fetchSuccess, results, error) in
+//                let resultDict = UIApplicationUtils.shared.convertToDictionary(text: results)
+//                let count = resultDict?["totalCount"] as? Int ?? 0
+//                if (count > 0){
+//                    UIApplicationUtils.showSuccessSnackbar(message: "Connection already existing".localized())
+//                    completion(CloudAgentConnectionWalletModel.init(),"","")
+//                    return
+//                }
                 
                 AriesAgentFunctions.shared.addWalletRecord(invitationKey: theirVerKey, label: label, serviceEndPoint: serviceEndPoint, connectionRecordId: "",imageURL: imageURL, walletHandler: walletHandler,type: .connection, orgID:orgId, completion: { (addRecord_Connection_Completed, connectionRecordId, error) in
                     if addRecord_Connection_Completed{
@@ -49,13 +49,13 @@ extension AriesCloudAgentHelper {
                                             print("verKey \(verKey)")
                                             AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler, recipientKey: theirVerKey, myVerKey: myVerKey ?? "", type: .queryIgrantAgent, isRoutingKeyEnabled: false) { (success, data, error) in
                                                 NetworkManager.shared.sendMsg(isMediator: false, msgData: data ?? Data()) { (statuscode,responseData) in
-                                                    if statuscode != 200 {
-                                                        if let trustPingSuccess = AriesCloudAgentHelper.onTrustPingSuccessBlock {
-                                                            trustPingSuccess(nil,nil,nil)
-                                                            SVProgressHUD.dismiss()
-                                                            return
-                                                        }
-                                                    }
+//                                                    if statuscode != 200 {
+//                                                        if let trustPingSuccess = AriesCloudAgentHelper.onTrustPingSuccessBlock {
+//                                                            trustPingSuccess(nil,nil,nil)
+//                                                            SVProgressHUD.dismiss()
+//                                                            return
+//                                                        }
+//                                                    }
                                                     if statuscode == 200 {
                                                         AriesAgentFunctions.shared.unpackMessage(walletHandler: walletHandler, messageData: responseData ?? Data()) { (success, unpackedData, error) in
                                                             if let messageModel = try? JSONSerialization.jsonObject(with: unpackedData ?? Data(), options: []) as? [String : Any] {
@@ -77,16 +77,16 @@ extension AriesCloudAgentHelper {
                         }
                     }
                 })
-            }
-        }
+//            }
+//        }
     }
     
-    func updateWalletRecords(walletHandler: IndyHandle, myDid:String?, verKey:String?, imageURL:String,isIgrantAgent:Bool,label: String, recipientKey: String,connectionRecordId:String,serviceEndPoint: String,routingKey: String,pollingEnabled:Bool ){
+    func updateWalletRecords(walletHandler: IndyHandle, myDid:String?, verKey:String?, imageURL:String,isIgrantAgent:Bool,label: String, recipientKey: String,connectionRecordId:String,serviceEndPoint: String,routingKey: [String]?,pollingEnabled:Bool ){
         AriesAgentFunctions.shared.setMetadata(walletHandler: walletHandler, myDid: myDid ?? "",verKey:verKey ?? "", completion: { (metaAdded) in
             if(metaAdded){
-                AriesAgentFunctions.shared.updateWalletRecord(walletHandler: walletHandler,recipientKey: recipientKey,label: label, type: UpdateWalletType.initialCloudAgent, id: connectionRecordId, theirDid: "", myDid: myDid ?? "",imageURL: imageURL,invitiationKey: recipientKey,isIgrantAgent: isIgrantAgent,orgID:AriesCloudAgentHelper.OrgID, completion: { (updateWalletRecordSuccess,updateWalletRecordId ,error) in
+                AriesAgentFunctions.shared.updateWalletRecord(walletHandler: walletHandler,recipientKey: recipientKey,label: label, type: UpdateWalletType.initialCloudAgent, id: connectionRecordId, theirDid: "", myDid: myDid ?? "",imageURL: imageURL,invitiationKey: recipientKey, isIgrantAgent: isIgrantAgent, routingKey: routingKey,orgID:AriesCloudAgentHelper.OrgID, completion: { (updateWalletRecordSuccess,updateWalletRecordId ,error) in
                     if(updateWalletRecordSuccess){
-                        AriesAgentFunctions.shared.updateWalletTags(walletHandler: walletHandler, id: connectionRecordId, myDid: myDid ?? "", theirDid: "",recipientKey: recipientKey,serviceEndPoint: serviceEndPoint, invitiationKey: recipientKey, type: .initialCloudAgent,isIgrantAgent: isIgrantAgent,orgID: AriesCloudAgentHelper.OrgID ?? "", completion: { (updateWalletTagSuccess, error) in
+                        AriesAgentFunctions.shared.updateWalletTags(walletHandler: walletHandler, id: connectionRecordId, myDid: myDid ?? "", theirDid: "",recipientKey: recipientKey,serviceEndPoint: serviceEndPoint, invitiationKey: recipientKey, type: .initialCloudAgent,isIgrantAgent: isIgrantAgent,orgID: AriesCloudAgentHelper.OrgID ?? "",myVerKey: verKey, completion: { (updateWalletTagSuccess, error) in
                             if(updateWalletTagSuccess){
                                 self.registerRouter(walletHandler: walletHandler,connectionRecordId: connectionRecordId, verKey: verKey ?? "", myDid: myDid ?? "", recipientKey: recipientKey, label: label,serviceEndPoint: serviceEndPoint, routingKey: routingKey,mediatorVerKey: WalletViewModel.mediatorVerKey ?? "",pollingEnabled: pollingEnabled,isIgrantAgent: isIgrantAgent)
                             }
@@ -97,7 +97,7 @@ extension AriesCloudAgentHelper {
         })
     }
     
-    func registerRouter(walletHandler: IndyHandle,connectionRecordId: String,verKey: String, myDid: String, recipientKey: String, label: String,serviceEndPoint: String, routingKey: String, mediatorVerKey: String,pollingEnabled: Bool = true,isIgrantAgent: Bool = false){
+    func registerRouter(walletHandler: IndyHandle,connectionRecordId: String,verKey: String, myDid: String, recipientKey: String, label: String,serviceEndPoint: String, routingKey: [String]?, mediatorVerKey: String,pollingEnabled: Bool = true,isIgrantAgent: Bool = false){
         AriesAgentFunctions.shared.openWalletSearch_type(walletHandler: walletHandler, type:
                                                             AriesAgentFunctions.mediatorDidDoc,searchType: .withoutQuery, completion: { (success, searchWalletHandler, error) in
                                                                 if (success) {
@@ -109,7 +109,7 @@ extension AriesCloudAgentHelper {
                                                                             let mediatorRoutingKey = docModel?.records?.first?.value?.service?.first?.routingKeys?.first ?? ""
                                                                             let mediatorRecipientKey = docModel?.records?.first?.value?.service?.first?.recipientKeys?.first ?? ""
                                                                             //let routerKey =
-                                                                            AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler, label: label, recipientKey: mediatorRecipientKey, id: connectionRecordId, myDid: myDid, myVerKey: mediatorVerKey , serviceEndPoint: serviceEndPoint, routingKey: mediatorRoutingKey , routedestination: verKey, deleteItemId: "", type: .addRoute,isRoutingKeyEnabled: AriesCloudAgentHelper.routerKey != "", externalRoutingKey: AriesCloudAgentHelper.routerKey ?? "") { (packedSuccessfully, packedData, error) in
+                                                                            AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler, label: label, recipientKey: mediatorRecipientKey, id: connectionRecordId, myDid: myDid, myVerKey: mediatorVerKey , serviceEndPoint: serviceEndPoint, routingKey: mediatorRoutingKey , routedestination: verKey, deleteItemId: "", type: .addRoute,isRoutingKeyEnabled: false, externalRoutingKey: []) { (packedSuccessfully, packedData, error) in
                                                                                 if packedSuccessfully {
                                                                                     NetworkManager.shared.sendMsg(isMediator: true, msgData: packedData ?? Data()) { (statuscode,recievedData) in
                                                                                         if statuscode != 200 {
@@ -132,7 +132,7 @@ extension AriesCloudAgentHelper {
     }
     
     func getRecordAndConnectForCloudAgent(walletHandler: IndyHandle,connectionRecordId: String,verKey: String, myDid: String, recipientKey: String, label: String, packageMsgType: PackMessageType,routingKey: String, serviceEndPoint: String,pollingEnabled: Bool = true){//routingKey: String,
-        AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler,label: label, recipientKey: recipientKey,  id: connectionRecordId, myDid: myDid , myVerKey: verKey ,serviceEndPoint: serviceEndPoint, routingKey: routingKey, deleteItemId: "", type: .initialCloudAgent,isRoutingKeyEnabled: AriesCloudAgentHelper.routerKey != "", externalRoutingKey: AriesCloudAgentHelper.routerKey ?? "", completion:{ (packMsgSuccess, messageData, error) in
+        AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler,label: label, recipientKey: recipientKey,  id: connectionRecordId, myDid: myDid , myVerKey: verKey ,serviceEndPoint: serviceEndPoint, routingKey: routingKey, deleteItemId: "", type: .initialCloudAgent,isRoutingKeyEnabled: AriesCloudAgentHelper.routerKey?.count ?? 0 > 0, externalRoutingKey: AriesCloudAgentHelper.routerKey ?? [], completion:{ (packMsgSuccess, messageData, error) in
             if (packMsgSuccess){
                 NetworkManager.shared.sendMsg(isMediator:false,msgData: messageData ?? Data()) { (statuscode,recievedData) in
                     print("Cloud Agent Request Send")
@@ -174,9 +174,12 @@ extension AriesCloudAgentHelper {
             let senderVerKey = (dataDic?["recipientKeys"] as? [String])?.first ?? ""
             let serviceEndPoint = (dataDic?["serviceEndpoint"] as? String) ?? ""
             let routingKey = (dataDic?["serviceEndpoint"] as? String) ?? ""
+            if let externalRoutingKey = (dataDic?["routingKeys"] as? [String]) {
+                AriesCloudAgentHelper.routerKey = externalRoutingKey
+            }
             NetworkManager.shared.baseURL = serviceEndPoint
             
-            AriesAgentFunctions.shared.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.cloudAgentConnection, searchType: .searchWithInvitationKey, invitationKey: recipientKey) { (searchCompleted, searchedWalletHandler, error) in
+            AriesAgentFunctions.shared.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.cloudAgentConnection, searchType: .searchWithMyVerKey, myVerKey: verKey) { (searchCompleted, searchedWalletHandler, error) in
                 AriesAgentFunctions.shared.fetchWalletSearchNextRecords(walletHandler: walletHandler, searchWalletHandler: searchedWalletHandler) { (searchCompleted, results, error) in
                     if let messageModel = UIApplicationUtils.shared.convertToDictionary(text: results,boolKeys: ["delete"]) {
                         let requestArray = messageModel["records"] as? [[String:Any]] ?? []
@@ -191,11 +194,10 @@ extension AriesCloudAgentHelper {
                             if (didDocRecordAdded){
                                 AriesAgentFunctions.shared.addWalletRecord_DidKey(walletHandler: walletHandler, theirDid: theirDid, recipientKey: senderVerKey, isMediator: false, completion: { (didKeyRecordAdded, didKeyRecordId, error) in
                                     
-                                    AriesAgentFunctions.shared.updateWalletRecord(walletHandler: walletHandler,recipientKey: senderVerKey,label: label_cloudAgent, type: .updateCloudAgentRecord, id: request_id, theirDid: theirDid, myDid: myDid_cloudAgent ,imageURL: imageUrl,
-                                                                                  invitiationKey: invitationKey,isIgrantAgent: isIgrantAgent == "1",orgID: AriesCloudAgentHelper.OrgID ,completion: { (updatedSuccessfully, updatedRecordId, error) in
+                                    AriesAgentFunctions.shared.updateWalletRecord(walletHandler: walletHandler,recipientKey: senderVerKey,label: label_cloudAgent, type: .updateCloudAgentRecord, id: request_id, theirDid: theirDid, myDid: myDid_cloudAgent ,imageURL: imageUrl,invitiationKey: invitationKey, isIgrantAgent: isIgrantAgent == "1", routingKey: AriesCloudAgentHelper.routerKey ?? [],orgID: AriesCloudAgentHelper.OrgID ,completion: { (updatedSuccessfully, updatedRecordId, error) in
                                                                                     if(updatedSuccessfully){
                                                                                         AriesAgentFunctions.shared.updateWalletTags(walletHandler: walletHandler, id: request_id, myDid: myDid_cloudAgent ,
-                                                                                                                                    theirDid: theirDid, recipientKey: senderVerKey, serviceEndPoint: serviceEndPoint,invitiationKey: invitationKey, type: .updateCloudAgentTag,isIgrantAgent: isIgrantAgent == "1",orgID: AriesCloudAgentHelper.OrgID ?? "", completion: { (updatedSuccessfully, error) in
+                                                                                                                                    theirDid: theirDid, recipientKey: senderVerKey, serviceEndPoint: serviceEndPoint,invitiationKey: invitationKey, type: .updateCloudAgentTag,isIgrantAgent: isIgrantAgent == "1",orgID: AriesCloudAgentHelper.OrgID ?? "",myVerKey: verKey, completion: { (updatedSuccessfully, error) in
                                                                                                                                         if (updatedSuccessfully){
                                                                                                                                             print("Cloud Agent Added")
                                                                                                                                             AriesAgentFunctions.shared.getMyDidWithMeta(walletHandler: walletHandler, myDid: myDid_cloudAgent) { (getMetaSuccessfully, metadata, error) in
@@ -222,12 +224,13 @@ extension AriesCloudAgentHelper {
         let walletHandler = walletHandle ?? 0
         print("recipientKey - ping send \(recipientKey)")
         print("verKey - ping send \(verKey)")
-        AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler, label: label, recipientKey: recipientKey, id: connectionRecordId, myDid: myDid, myVerKey: verKey, serviceEndPoint: serviceEndPoint, routingKey: routingKey,deleteItemId: "", type: .trustPing,isRoutingKeyEnabled: AriesCloudAgentHelper.routerKey != "", externalRoutingKey: AriesCloudAgentHelper.routerKey ?? "") { (packedSuccessfully, packedData, error) in
+        AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler, label: label, recipientKey: recipientKey, id: connectionRecordId, myDid: myDid, myVerKey: verKey, serviceEndPoint: serviceEndPoint, routingKey: routingKey,deleteItemId: "", type: .trustPing,isRoutingKeyEnabled: AriesCloudAgentHelper.routerKey?.count ?? 0 > 0, externalRoutingKey: AriesCloudAgentHelper.routerKey ?? []) { (packedSuccessfully, packedData, error) in
             NetworkManager.shared.sendMsg(isMediator: false, msgData: packedData ?? Data()) { (statuscode,responseData) in
                 if statuscode != 200 {
                     if let trustPingSuccess = AriesCloudAgentHelper.onTrustPingSuccessBlock {
-                        trustPingSuccess(nil,nil,nil)
-                        SVProgressHUD.dismiss()
+//                        trustPingSuccess(nil,nil,nil)
+//                        SVProgressHUD.dismiss()
+                        pingResponseHandler(walletHandle: walletHandler, verKey: verKey, recipientKey: recipientKey)
                         return
                     }
                 }
@@ -246,10 +249,9 @@ extension AriesCloudAgentHelper {
                     let firstRecord = records?.first
                     let connectionModel = CloudAgentConnectionWalletModel.decode(withDictionary: firstRecord as NSDictionary? ?? NSDictionary()) as? CloudAgentConnectionWalletModel
                     self.getiGrantOrgDetails(walletHandle: walletHandler, reqId: connectionModel?.id ?? "") { (success, orgModel) in
-                        
                         AriesAgentFunctions.shared.updateWalletRecord(walletHandler: walletHandler,recipientKey: recipientKey,label: connectionModel?.value?.theirLabel ?? "", type: .trusted, id: connectionModel?.value?.requestID ?? "", theirDid: connectionModel?.value?.theirDid ?? "", myDid: connectionModel?.value?.myDid ?? "" ,imageURL: connectionModel?.value?.imageURL ?? "",invitiationKey: connectionModel?.value?.invitationKey, isIgrantAgent: connectionModel?.value?.isIgrantAgent == "1",orgDetails: orgModel,orgID: AriesCloudAgentHelper.OrgID, completion: { (updatedSuccessfully, updatedRecordId, error) in
                             if(updatedSuccessfully){
-                                AriesAgentFunctions.shared.updateWalletTags(walletHandler: walletHandler, id: updatedRecordId, myDid: connectionModel?.value?.myDid ?? "", theirDid: connectionModel?.value?.theirDid ?? "", recipientKey: recipientKey, serviceEndPoint: "", invitiationKey: connectionModel?.value?.invitationKey, type: .cloudAgentActive,orgID: AriesCloudAgentHelper.OrgID) { (tagUpdated, error) in
+                                AriesAgentFunctions.shared.updateWalletTags(walletHandler: walletHandler, id: updatedRecordId, myDid: connectionModel?.value?.myDid ?? "", theirDid: connectionModel?.value?.theirDid ?? "", recipientKey: recipientKey, serviceEndPoint: "", invitiationKey: connectionModel?.value?.invitationKey, type: .cloudAgentActive,orgID: AriesCloudAgentHelper.OrgID, myVerKey: connectionModel?.tags?.myVerKey) { (tagUpdated, error) in
                                     if (tagUpdated){
                                         print("Cloud Agent Trusted")
                                         if let trustPingSuccess = AriesCloudAgentHelper.onTrustPingSuccessBlock,let connctnModel = connectionModel {
@@ -293,11 +295,8 @@ extension AriesCloudAgentHelper {
                                 AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler, recipientKey: connModel?.value?.reciepientKey ?? "", myVerKey: verKey, type: .getIgrantOrgDetail,isRoutingKeyEnabled: false) { (success, orgPackedData, error) in
                                     NetworkManager.shared.sendMsg(isMediator: false, msgData: orgPackedData ?? Data()) { (statuscode,orgServerResponseData) in
                                         if statuscode != 200 {
-                                            if let trustPingSuccess = AriesCloudAgentHelper.onTrustPingSuccessBlock {
-                                                trustPingSuccess(nil,nil,nil)
-                                                SVProgressHUD.dismiss()
+                                                completion(false,nil)
                                                 return
-                                            }
                                         }
                                         AriesAgentFunctions.shared.unpackMessage(walletHandler: walletHandler, messageData: orgServerResponseData ?? Data()) { (unpackedSuccessfully, orgDetailsData, error) in
                                             if let messageModel = try? JSONSerialization.jsonObject(with: orgDetailsData ?? Data(), options: []) as? [String : Any] {
@@ -322,7 +321,7 @@ extension AriesCloudAgentHelper {
     }
     
     
-    func checkConnectionWithSameOrgExist(walletHandler: IndyHandle, label: String, theirVerKey: String,serviceEndPoint: String, routingKey: String, imageURL: String,pollingEnabled: Bool = true,isFromDataExchange: Bool,completion: @escaping((Bool,OrganisationInfoModel?,CloudAgentConnectionWalletModel?) -> Void)){
+    func checkConnectionWithSameOrgExist(walletHandler: IndyHandle, label: String, theirVerKey: String,serviceEndPoint: String, routingKey: [String]?, imageURL: String,pollingEnabled: Bool = true,isFromDataExchange: Bool,completion: @escaping((Bool,OrganisationInfoModel?,CloudAgentConnectionWalletModel?) -> Void)){
         AriesCloudAgentHelper.orgDetails = nil
         AriesCloudAgentHelper.OrgID = nil
         AriesAgentFunctions.shared.createAndStoreId(walletHandler: walletHandler) { (createDidSuccess, myDid, verKey,error) in
@@ -333,10 +332,9 @@ extension AriesCloudAgentHelper {
                 NetworkManager.shared.baseURL = serviceEndPoint
                 NetworkManager.shared.sendMsg(isMediator: false, msgData: data ?? Data()) { (statuscode,responseData) in
                     if statuscode != 200 {
-                        if let trustPingSuccess = AriesCloudAgentHelper.onTrustPingSuccessBlock {
-                            trustPingSuccess(nil,nil,nil)
-                            return
-                        }
+                        completion(false,nil,nil)
+                        SVProgressHUD.dismiss()
+                        return
                     }
                     if statuscode == 200 {
                         AriesAgentFunctions.shared.unpackMessage(walletHandler: walletHandler, messageData: responseData ?? Data()) { (success, unpackedData, error) in
@@ -348,11 +346,9 @@ extension AriesCloudAgentHelper {
                                     AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler, recipientKey:theirVerKey, myVerKey: myVerKey ?? "", type: .getIgrantOrgDetail,isRoutingKeyEnabled: false) { (success, orgPackedData, error) in
                                         NetworkManager.shared.sendMsg(isMediator: false, msgData: orgPackedData ?? Data()) { (statuscode,orgServerResponseData) in
                                             if statuscode != 200 {
-                                                if let trustPingSuccess = AriesCloudAgentHelper.onTrustPingSuccessBlock {
-                                                    trustPingSuccess(nil,nil,nil)
-                                                    SVProgressHUD.dismiss()
-                                                    return
-                                                }
+                                                completion(false,nil,nil)
+                                                SVProgressHUD.dismiss()
+                                                return
                                             }
                                             AriesAgentFunctions.shared.unpackMessage(walletHandler: walletHandler, messageData: orgServerResponseData ?? Data()) { (unpackedSuccessfully, orgDetailsData, error) in
                                                 if let messageModel = try? JSONSerialization.jsonObject(with: orgDetailsData ?? Data(), options: []) as? [String : Any] {
@@ -380,11 +376,9 @@ extension AriesCloudAgentHelper {
 //                                                            completion(false,nil,connectionModel)
                                                             NetworkManager.shared.sendMsg(isMediator: false, msgData: data ?? Data()) { (statuscode,responseData) in
                                                                 if statuscode != 200 {
-                                                                    if let trustPingSuccess = AriesCloudAgentHelper.onTrustPingSuccessBlock {
-                                                                        trustPingSuccess(nil,nil,nil)
-                                                                        SVProgressHUD.dismiss()
-                                                                        return
-                                                                    }
+                                                                    completion(false,nil,nil)
+                                                                    SVProgressHUD.dismiss()
+                                                                    return
                                                                 }
                                                                 if statuscode == 200 {
                                                                     print("Informed duplicate connection to server")
@@ -395,9 +389,11 @@ extension AriesCloudAgentHelper {
                                                         }
                                                     } else {
                                                         completion(false,orgDetail,connectionModel)
+                                                        return
                                                     }
                                                 } else {
                                                     completion(false,nil,nil)
+                                                    return
                                                 }
                                             }
                                         }
@@ -407,6 +403,7 @@ extension AriesCloudAgentHelper {
                                     }
                                     } else {
                                         completion(false,nil,nil)
+                                        return
                                     }
                                 }
                             }

@@ -15,6 +15,7 @@ struct Constants {
 
     public static let userDefault_ledger = "Ledger"
     public static let userDefault_language = "Language"
+    public static let ledger_igrant_old_sandbox = "iGrant.io Sandbox Old"
     public static let ledger_igrant_sandbox = "iGrant.io Sandbox"
     public static let ledger_sovrin_builder = "Sovrin Builder"
     public static let ledger_sovrin_live = "Sovrin Live"

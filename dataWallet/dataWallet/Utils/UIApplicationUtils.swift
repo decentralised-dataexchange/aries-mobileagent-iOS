@@ -132,7 +132,7 @@ class UIApplicationUtils {
         }
     }
     
-    internal static func showErrorSnackbar(withTitle: String? = "", message: String) {
+    internal static func showErrorSnackbar(withTitle: String? = "", message: String,navViewController: UIViewController? = nil) {
         let error = MessageView.viewFromNib(layout: .messageView)
         error.configureTheme(.error)
         error.configureContent(title: withTitle!, body: message)
@@ -140,17 +140,29 @@ class UIApplicationUtils {
         error.configureDropShadow()
 //        SwiftMessages.sharedInstance.defaultConfig.dimMode = .none
 //        SwiftMessages.sharedInstance.defaultConfig.duration = .seconds(seconds: 3)
-        
+       
         SwiftMessages.show(view: error)
     }
     
-    internal static func showSuccessSnackbar(withTitle: String? = "", message: String) {
+    internal static func showSuccessSnackbar(withTitle: String? = "", message: String,navToNotifScreen: Bool = false) {
+        let navigationController = UIApplicationUtils.shared.getTopVC() as? UINavigationController
         let success = MessageView.viewFromNib(layout: .messageView)
         success.configureTheme(.success)
         success.backgroundColor = #colorLiteral(red: 0.2666666667, green: 0.5803921569, blue: 0.2666666667, alpha: 1)
         success.configureContent(title: withTitle!, body: message)
         success.configureDropShadow()
         success.button?.isHidden = true
+        if navToNotifScreen {
+            success.tapHandler = { _ in
+                SwiftMessages.hide()
+                DispatchQueue.main.async {
+                    if let controller = UIStoryboard(name:"AriesMobileAgent", bundle:UIApplicationUtils.shared.getResourcesBundle()).instantiateViewController( withIdentifier: "NotificationListViewController") as? NotificationListViewController {
+                        controller.viewModel = NotificationsListViewModel.init(walletHandle: WalletViewModel.openedWalletHandler)
+                        navigationController?.pushViewController(controller, animated: true)
+                    }
+                }
+            }
+        }
 //        SwiftMessages.sharedInstance.defaultConfig.dimMode = .none
 //        SwiftMessages.sharedInstance.defaultConfig.duration = .seconds(seconds: 3)
         

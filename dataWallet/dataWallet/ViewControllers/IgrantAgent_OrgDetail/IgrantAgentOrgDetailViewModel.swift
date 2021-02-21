@@ -47,12 +47,16 @@ class IgrantAgentOrgDetailViewModel {
                                     let resultsDict = UIApplicationUtils.shared.convertToDictionary(text: records)
                                     let invitationRecord = (resultsDict?["records"] as? [[String: Any]])?.first
                                     let serviceEndPoint = (invitationRecord?["value"] as? [String: Any])?["serviceEndpoint"] as? String ?? ""
-                                    let externalRoutingKey = (invitationRecord?["value"] as? [String: Any])?["routing_key"] as? String ?? ""
+                                    let externalRoutingKey = (invitationRecord?["value"] as? [String: Any])?["routing_key"] as? [String] ?? []
                                     self.connectionInvitationRecordId = (invitationRecord?["value"] as? [String: Any])?["@id"] as? String ?? ""
                                     NetworkManager.shared.baseURL = serviceEndPoint
                                     AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler, recipientKey: connModel?.value?.reciepientKey ?? "", myVerKey: verKey, type: .getIgrantOrgDetail,isRoutingKeyEnabled: false) {[unowned self] (success, orgPackedData, error) in
                                     NetworkManager.shared.sendMsg(isMediator: false, msgData: orgPackedData ?? Data()) { [unowned self](statuscode,orgServerResponseData) in
-                                       
+                                        if statuscode != 200 {
+                                            completion(true)
+                                            SVProgressHUD.dismiss()
+                                           return
+                                        }
                                         AriesAgentFunctions.shared.unpackMessage(walletHandler: walletHandler, messageData: orgServerResponseData ?? Data()) {[unowned self] (unpackedSuccessfully, orgDetailsData, error) in
                                             if let messageModel = try? JSONSerialization.jsonObject(with: orgDetailsData ?? Data(), options: []) as? [String : Any] {
                                                 print("unpackmsg -- \(messageModel)")

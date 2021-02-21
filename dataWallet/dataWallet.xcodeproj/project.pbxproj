@@ -117,6 +117,7 @@
 		0E979FA725B599ED00749E94 /* igrant_sandbox_genesis.txn in Resources */ = {isa = PBXBuildFile; fileRef = 0E979FA625B599ED00749E94 /* igrant_sandbox_genesis.txn */; };
 		0E979FC925B5DA3200749E94 /* NotificationsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E979FC725B5DA3200749E94 /* NotificationsListViewModel.swift */; };
 		0E979FF125B5DA7A00749E94 /* NotificationListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E979FC625B5DA3200749E94 /* NotificationListViewController.swift */; };
+		0EA34B9225E249AB004ACCC4 /* igrant_old_sandbox_genesis.txn in Resources */ = {isa = PBXBuildFile; fileRef = 0EA34B9125E249AB004ACCC4 /* igrant_old_sandbox_genesis.txn */; };
 		32A1C24E3D5C00C2CECBF153 /* libPods-dataWallet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8240AD1F68B9AE4376CD8113 /* libPods-dataWallet.a */; };
 /* End PBXBuildFile section */
 
@@ -260,6 +261,7 @@
 		0E979FA625B599ED00749E94 /* igrant_sandbox_genesis.txn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = igrant_sandbox_genesis.txn; sourceTree = "<group>"; };
 		0E979FC625B5DA3200749E94 /* NotificationListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationListViewController.swift; sourceTree = "<group>"; };
 		0E979FC725B5DA3200749E94 /* NotificationsListViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationsListViewModel.swift; sourceTree = "<group>"; };
+		0EA34B9125E249AB004ACCC4 /* igrant_old_sandbox_genesis.txn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = igrant_old_sandbox_genesis.txn; sourceTree = "<group>"; };
 		424EA956461BB336D62A2563 /* Pods-dataWallet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-dataWallet.debug.xcconfig"; path = "Target Support Files/Pods-dataWallet/Pods-dataWallet.debug.xcconfig"; sourceTree = "<group>"; };
 		8240AD1F68B9AE4376CD8113 /* libPods-dataWallet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-dataWallet.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CB444181B8F1A8EC621AFAD /* Pods-dataWallet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-dataWallet.release.xcconfig"; path = "Target Support Files/Pods-dataWallet/Pods-dataWallet.release.xcconfig"; sourceTree = "<group>"; };
@@ -723,6 +725,7 @@
 		0E979F9225B5819200749E94 /* Genesis */ = {
 			isa = PBXGroup;
 			children = (
+				0EA34B9125E249AB004ACCC4 /* igrant_old_sandbox_genesis.txn */,
 				0E979FA625B599ED00749E94 /* igrant_sandbox_genesis.txn */,
 				0E979FA025B5992F00749E94 /* pool_transactions_builder_genesis.txn */,
 				0E979F9F25B5992F00749E94 /* pool_transactions_live_genesis.txn */,
@@ -817,6 +820,7 @@
 				0E979FA125B5992F00749E94 /* pool_transactions_sandbox_genesis.txn in Resources */,
 				0E5C167125AC20FA00BC75EB /* Images.xcassets in Resources */,
 				0E979FA225B5992F00749E94 /* pool_transactions_live_genesis.txn in Resources */,
+				0EA34B9225E249AB004ACCC4 /* igrant_old_sandbox_genesis.txn in Resources */,
 				0E5C166625AC20FA00BC75EB /* AriesMobileAgent.storyboard in Resources */,
 				0E979FA325B5992F00749E94 /* pool_transactions_builder_genesis.txn in Resources */,
 				0E5C159D25AC20D700BC75EB /* Assets.xcassets in Resources */,
@@ -1154,7 +1158,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.20;
+				MARKETING_VERSION = 1.2.21;
 				PRODUCT_BUNDLE_IDENTIFIER = io.iGrant.DataWallet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INSTALL_OBJC_HEADER = YES;
@@ -1182,7 +1186,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.20;
+				MARKETING_VERSION = 1.2.21;
 				PRODUCT_BUNDLE_IDENTIFIER = io.iGrant.DataWallet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INSTALL_OBJC_HEADER = YES;

@@ -159,7 +159,7 @@ extension OrganisationListViewController: QRScannerViewDelegate {
         let recipientKey = (dataDID?["recipientKeys"] as? [String])?.first ?? ""
         let label = dataDID?["label"] as? String ?? ""
         let serviceEndPoint = dataDID?["serviceEndpoint"] as? String ?? ""
-        let routingKey = (dataDID?["routingKeys"] as? [String])?.first ?? ""
+        let routingKey = (dataDID?["routingKeys"] as? [String]) ?? []
         let imageURL = dataDID?["imageUrl"] as? String ?? (dataDID?["image_url"] as? String ?? "")
         NetworkManager.shared.baseURL = serviceEndPoint
         
@@ -177,9 +177,10 @@ extension OrganisationListViewController: QRScannerViewDelegate {
                     let newRecipientKey = (newInvDict?["recipientKeys"] as? [String])?.first ?? ""
                     let newLabel = newInvDict?["label"] as? String ?? ""
                     let newServiceEndPoint = newInvDict?["serviceEndpoint"] as? String ?? ""
-                    let newRoutingKey = (newInvDict?["routingKeys"] as? [String])?.first ?? ""
+                    let newRoutingKey = (newInvDict?["routingKeys"] as? [String]) ?? []
                     let newImageURL = newInvDict?["imageUrl"] as? String ?? (newInvDict?["image_url"] as? String ?? "")
                     SVProgressHUD.dismiss()
+                    NetworkManager.shared.baseURL = newServiceEndPoint
                     if newServiceEndPoint == "" {
                         UIApplicationUtils.showErrorSnackbar(message: "Sorry, could not open scan content".localized())
                         return

@@ -128,7 +128,7 @@ extension CertificateListViewController: UITableViewDelegate,UITableViewDataSour
                 orgCell.nameLbl.text = viewModel?.connectionModel?.theirLabel ?? ""
                 orgCell.locationLbl.text = ""
                 UIApplicationUtils.shared.setRemoteImageOn(orgCell.logoImageView, url: viewModel?.connectionModel?.imageURL)
-                UIApplicationUtils.shared.setRemoteImageOn(orgCell.orgImageView, url: "",showPlaceholder : false)
+                UIApplicationUtils.shared.setRemoteImageOn(orgCell.orgImageView, url: "",placeholderImage: #imageLiteral(resourceName: "00_Default_CoverImage_02-min"))
                 return orgCell
         } else if indexPath.section == 1 {
         

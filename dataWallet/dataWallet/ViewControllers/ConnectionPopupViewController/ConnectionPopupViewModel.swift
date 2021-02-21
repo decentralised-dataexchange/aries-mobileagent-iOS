@@ -18,13 +18,13 @@ struct ConnectionPopupViewModel {
     var walletHandler: IndyHandle?
     var recipientKey: String?
     var serviceEndPoint: String?
-    var routingKey: String?
+    var routingKey: [String]?
     var pollingEnabled: Bool!
     var orgId: String?
     var orgDetails: OrganisationInfoModel?
     weak var delegate:ConnectionPopupViewModelDelegate?
     
-    init(orgName: String?,orgImageURL: String?,walletHandler: IndyHandle?,recipientKey: String?,serviceEndPoint: String?,routingKey: String?, pollingEnabled: Bool? = false, orgId: String?, orgDetails: OrganisationInfoModel?) {
+    init(orgName: String?,orgImageURL: String?,walletHandler: IndyHandle?,recipientKey: String?,serviceEndPoint: String?,routingKey: [String]?, pollingEnabled: Bool? = false, orgId: String?, orgDetails: OrganisationInfoModel?) {
         self.orgName = orgName
         self.orgImageURL = orgImageURL
         self.walletHandler = walletHandler
@@ -38,7 +38,7 @@ struct ConnectionPopupViewModel {
     //(walletHandler: IndyHandle, label: String, theirVerKey: String,serviceEndPoint: String, routingKey: String, imageURL: String,mediatorVerKey: String,pollingEnabled: Bool = true,completion: @escaping(Bool) -> Void)
     
     func startConnection(){
-        AriesCloudAgentHelper.shared.newConnectionConfigCloudAgent(walletHandler: self.walletHandler ?? IndyHandle(), label: self.orgName ?? "", theirVerKey: self.recipientKey ?? "", serviceEndPoint: self.serviceEndPoint ?? "", routingKey: self.routingKey ?? "", imageURL: self.orgImageURL ?? "", pollingEnabled: self.pollingEnabled,orgId: self.orgId,orgDetails: self.orgDetails) { (connectionModel,recipientKey,myVerKey)  in
+        AriesCloudAgentHelper.shared.newConnectionConfigCloudAgent(walletHandler: self.walletHandler ?? IndyHandle(), label: self.orgName ?? "", theirVerKey: self.recipientKey ?? "", serviceEndPoint: self.serviceEndPoint ?? "", routingKey: self.routingKey, imageURL: self.orgImageURL ?? "", pollingEnabled: self.pollingEnabled,orgId: self.orgId,orgDetails: self.orgDetails) { (connectionModel,recipientKey,myVerKey)  in
             if let connectionModel = connectionModel, let recipientKey = recipientKey, let myVerKey = myVerKey {
                 delegate?.connectionEstablised(connModel:connectionModel, recipientKey: recipientKey, myVerKey: myVerKey)
             } else {

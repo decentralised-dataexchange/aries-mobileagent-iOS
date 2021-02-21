@@ -50,9 +50,10 @@ class NetworkManager {
 //                    print(moyaResponse.request)
 //                    print(moyaResponse.statusCode)
                     if moyaResponse.statusCode != 200 {
-                        UIApplicationUtils.showErrorSnackbar(message: "Unexpected error. Please try again.".localized())
-                        SVProgressHUD.dismiss()
+//                        UIApplicationUtils.showErrorSnackbar(message: "Unexpected error. Please try again.".localized())
+//                        SVProgressHUD.dismiss()
                         completion(0,nil)
+                        return
                     }
                     let data = moyaResponse.data // Data, your JSON response is probably in here!
                     completion(moyaResponse.statusCode,data)

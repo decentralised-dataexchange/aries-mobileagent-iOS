@@ -28,11 +28,11 @@ class ConnectionPopupViewController: AriesBaseViewController {
         }
     }
     
-    static func showConnectionPopup(orgName: String?,orgImageURL: String?,walletHandler: IndyHandle?,recipientKey: String?,serviceEndPoint: String?,routingKey: String?,isFromDataExchange: Bool,completion: @escaping ((CloudAgentConnectionWalletModel?,String?,String?) -> Void)){ //connmodel,recipeintkey,myverkey
+    static func showConnectionPopup(orgName: String?,orgImageURL: String?,walletHandler: IndyHandle?,recipientKey: String?,serviceEndPoint: String?,routingKey: [String]?,isFromDataExchange: Bool,completion: @escaping ((CloudAgentConnectionWalletModel?,String?,String?) -> Void)){ //connmodel,recipeintkey,myverkey
         SVProgressHUD.show()
 
         //check connection with same Org Exist
-        AriesCloudAgentHelper.shared.checkConnectionWithSameOrgExist(walletHandler: walletHandler ?? IndyHandle(), label: orgName ?? "", theirVerKey: recipientKey ?? "", serviceEndPoint: serviceEndPoint ?? "", routingKey: routingKey ?? "", imageURL: orgImageURL ?? "",isFromDataExchange: isFromDataExchange) { (connectionExist, orgDetails,connModel) in
+        AriesCloudAgentHelper.shared.checkConnectionWithSameOrgExist(walletHandler: walletHandler ?? IndyHandle(), label: orgName ?? "", theirVerKey: recipientKey ?? "", serviceEndPoint: serviceEndPoint ?? "", routingKey: routingKey, imageURL: orgImageURL ?? "",isFromDataExchange: isFromDataExchange) { (connectionExist, orgDetails,connModel) in
             if !isFromDataExchange{
                 SVProgressHUD.dismiss()
             }

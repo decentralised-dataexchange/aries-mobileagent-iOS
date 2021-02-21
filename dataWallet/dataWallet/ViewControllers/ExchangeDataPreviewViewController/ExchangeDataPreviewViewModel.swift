@@ -27,8 +27,9 @@ class ExchangeDataPreviewViewModel{
     var isFromQR: Bool = false
     var inboxId: String?
     var connectionModel: CloudAgentConnectionWalletModel?
+    var QR_ID:String?
     
-    init(walletHandle: IndyHandle?,reqDetail: SearchPresentationExchangeValueModel?,QRData: ExchangeDataQRCodeModel? = nil,isFromQR: Bool? = false, inboxId: String?,connectionModel: CloudAgentConnectionWalletModel?) {
+    init(walletHandle: IndyHandle?,reqDetail: SearchPresentationExchangeValueModel?,QRData: ExchangeDataQRCodeModel? = nil,isFromQR: Bool? = false, inboxId: String?,connectionModel: CloudAgentConnectionWalletModel?, QR_ID:String? = "") {
         self.walletHandle = walletHandle
         self.reqDetail = reqDetail
         self.QRData = QRData
@@ -61,38 +62,51 @@ class ExchangeDataPreviewViewModel{
                 }
                 
                 ///////////// GetOrgName
-        for item in attrs.keys {
-            AriesPoolHelper.shared.pool_prover_search_credentials(forProofRequest: UIApplicationUtils.shared.getJsonString(for: presentntReq.dictionary ?? [String:Any]()), extraQueryJSON: UIApplicationUtils.shared.getJsonString(for: [String:Any]()), walletHandle: walletHandler) {[unowned self] (success, searchHandle, error) in
-                AriesPoolHelper.shared.proverfetchcredentialsforproof_req(forProofReqItemReferent: item, searchHandle: searchHandle ?? IndyHandle(), count: 100) { [unowned self] (success, response, error) in
-                    let addKeyRecord = "{\"records\":" + (response ?? "") + "}"
-                    let proofReqDict = UIApplicationUtils.shared.convertToDictionary(text: addKeyRecord)
-                    let searchProofRequestItemResponse = SearchProofRequestItemResponse.decode(withDictionary: proofReqDict as NSDictionary? ?? NSDictionary()) as? SearchProofRequestItemResponse
-                    
-                    if searchProofRequestItemResponse?.records?.count ?? 0 == 0 {
-                        self.isInsufficientData = true
-                    }
-                        var credValue = ProofCredentialValue()
-                        credValue.credId = searchProofRequestItemResponse?.records?.first?.credInfo?.referent
-                        credValue.revealed = true
-                        
-                        self.requestedAttributes[item] = credValue
-                        
-                        var attributes = ProofExchangeAttributes()
-                        attributes.name = attrs[item]?.name
-                        attributes.value = searchProofRequestItemResponse?.records?.first?.credInfo?.attrs?[attributes.name ?? ""] ?? ""
-                        attributes.credDefId = searchProofRequestItemResponse?.records?.first?.credInfo?.credDefID
-                        attributes.referent = searchProofRequestItemResponse?.records?.first?.credInfo?.referent
-                        self.attributelist.append(attributes)
-                        if self.attributelist.count == attrs.count {
-                            AriesPoolHelper.shared.proverclosecredentialssearchforproofreq(withHandle: searchHandle ?? IndyHandle()) {[unowned self] (success, error) in
-                                completion(true)
-                                SVProgressHUD.dismiss()
+                for item in attrs.keys {
+                    AriesPoolHelper.shared.pool_prover_search_credentials(forProofRequest: UIApplicationUtils.shared.getJsonString(for: presentntReq.dictionary ?? [String:Any]()), extraQueryJSON: UIApplicationUtils.shared.getJsonString(for: [String:Any]()), walletHandle: walletHandler) {[unowned self] (success, searchHandle, error) in
+                        AriesPoolHelper.shared.proverfetchcredentialsforproof_req(forProofReqItemReferent: item, searchHandle: searchHandle ?? IndyHandle(), count: 100) { [unowned self] (success, response, error) in
+                            let addKeyRecord = "{\"records\":" + (response ?? "") + "}"
+                            let proofReqDict = UIApplicationUtils.shared.convertToDictionary(text: addKeyRecord)
+                            let searchProofRequestItemResponse = SearchProofRequestItemResponse.decode(withDictionary: proofReqDict as NSDictionary? ?? NSDictionary()) as? SearchProofRequestItemResponse
+                            
+                            if searchProofRequestItemResponse?.records?.count ?? 0 == 0 {
+                                self.isInsufficientData = true
                             }
+                            var credValue = ProofCredentialValue()
+                            credValue.credId = searchProofRequestItemResponse?.records?.first?.credInfo?.referent
+                            credValue.revealed = true
+                            
+                            self.requestedAttributes[item] = credValue
+                            
+                            var attributes = ProofExchangeAttributes()
+                            attributes.name = attrs[item]?.name
+                            attributes.value = searchProofRequestItemResponse?.records?.first?.credInfo?.attrs?[attributes.name ?? ""] ?? ""
+                            if let names = attrs[item]?.names {
+                                for name in names{
+                                    if let value = searchProofRequestItemResponse?.records?.first?.credInfo?.attrs?[name] {
+                                        attributes.name = name
+                                        attributes.value = value
+                                    }
+                                }
+                            }
+                            
+                            attributes.credDefId = searchProofRequestItemResponse?.records?.first?.credInfo?.credDefID
+                            attributes.referent = searchProofRequestItemResponse?.records?.first?.credInfo?.referent
+                            self.attributelist.append(attributes)
+                            if self.attributelist.count == attrs.count {
+                                AriesPoolHelper.shared.proverclosecredentialssearchforproofreq(withHandle: searchHandle ?? IndyHandle()) {[unowned self] (success, error) in
+                                    completion(true)
+                                    SVProgressHUD.dismiss()
+                                }
+                            }
+                        }
                     }
                 }
-            }
-        }
-                
+                if attrs.isEmpty{
+                    isInsufficientData = true
+                    completion(true)
+                    SVProgressHUD.dismiss()
+                }
             }
         }
     }
@@ -104,24 +118,24 @@ class ExchangeDataPreviewViewModel{
             return
         }
         if self.isFromQR{
-        SVProgressHUD.show()
-
-        let walletHandler = walletHandle ?? IndyHandle()
-        let value = "\(self.QRData?.invitationURL?.split(separator: "=").last ?? "")".decodeBase64() ?? ""
-        let dataDID = UIApplicationUtils.shared.convertToDictionary(text: value)
-        let recipientKey = (dataDID?["recipientKeys"] as? [String])?.first ?? ""
-        let label = dataDID?["label"] as? String ?? ""
-        let serviceEndPoint = dataDID?["serviceEndpoint"] as? String ?? ""
-        let routingKey = (dataDID?["routingKeys"] as? [String])?.first ?? ""
-        let imageURL = dataDID?["imageUrl"] as? String ?? (dataDID?["image_url"] as? String ?? "")
+            SVProgressHUD.show()
             
-        self.orgName = label
-        AriesAgentFunctions.shared.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.cloudAgentConnection,searchType: .checkExistingConnection,invitationKey: recipientKey, completion: { [unowned self](success, searchWalletHandler, error) in
-            if (success){
-                AriesAgentFunctions.shared.fetchWalletSearchNextRecords(walletHandler: walletHandler, searchWalletHandler: searchWalletHandler, completion: {[unowned self] (fetchedSuccessfully,results,error) in
-                    if (fetchedSuccessfully){
-                        let resultDict = UIApplicationUtils.shared.convertToDictionary(text: results,boolKeys: ["delete"])
-                        if ((resultDict?["records"] as? [[String:Any]])?.first?["id"] as? String) != nil {
+            let walletHandler = walletHandle ?? IndyHandle()
+            let value = "\(self.QRData?.invitationURL?.split(separator: "=").last ?? "")".decodeBase64() ?? ""
+            let dataDID = UIApplicationUtils.shared.convertToDictionary(text: value)
+            let recipientKey = (dataDID?["recipientKeys"] as? [String])?.first ?? ""
+            let label = dataDID?["label"] as? String ?? ""
+            let serviceEndPoint = dataDID?["serviceEndpoint"] as? String ?? ""
+            let routingKey = (dataDID?["routingKeys"] as? [String]) ?? []
+            let imageURL = dataDID?["imageUrl"] as? String ?? (dataDID?["image_url"] as? String ?? "")
+            
+            self.orgName = label
+            AriesAgentFunctions.shared.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.cloudAgentConnection,searchType: .checkExistingConnection,invitationKey: recipientKey, completion: { [unowned self](success, searchWalletHandler, error) in
+                if (success){
+                    AriesAgentFunctions.shared.fetchWalletSearchNextRecords(walletHandler: walletHandler, searchWalletHandler: searchWalletHandler, completion: {[unowned self] (fetchedSuccessfully,results,error) in
+                        if (fetchedSuccessfully){
+                            let resultDict = UIApplicationUtils.shared.convertToDictionary(text: results,boolKeys: ["delete"])
+                            if ((resultDict?["records"] as? [[String:Any]])?.first?["id"] as? String) != nil {
                                 let records = resultDict?["records"] as? [[String:Any]]
                                 let firstRecord = records?.first
                                 let connectionModel = CloudAgentConnectionWalletModel.decode(withDictionary: firstRecord as NSDictionary? ?? NSDictionary()) as? CloudAgentConnectionWalletModel ?? CloudAgentConnectionWalletModel()
@@ -133,38 +147,38 @@ class ExchangeDataPreviewViewModel{
                                     }
                                 }
                                 
-                        }else{
-                            ConnectionPopupViewController.showConnectionPopup(orgName: label, orgImageURL: imageURL, walletHandler: walletHandler, recipientKey: recipientKey, serviceEndPoint: serviceEndPoint, routingKey: routingKey,isFromDataExchange: true) {[unowned self] (connectionModel,recipientKey,myVerKey) in
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    SVProgressHUD.show()
-                                    guard let connectionModel = connectionModel, let recipientKey = recipientKey, let myVerKey = myVerKey else{
-                                        SVProgressHUD.dismiss()
-                                        UIApplicationUtils.showErrorSnackbar(message: "Something went wrong".localized())
-                                        return
+                            }else{
+                                ConnectionPopupViewController.showConnectionPopup(orgName: label, orgImageURL: imageURL, walletHandler: walletHandler, recipientKey: recipientKey, serviceEndPoint: serviceEndPoint, routingKey: routingKey,isFromDataExchange: true) {[unowned self] (connectionModel,recipientKey,myVerKey) in
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        SVProgressHUD.show()
+                                        guard let connectionModel = connectionModel, let recipientKey = recipientKey, let myVerKey = myVerKey else{
+                                            SVProgressHUD.dismiss()
+                                            UIApplicationUtils.showErrorSnackbar(message: "Something went wrong".localized())
+                                            return
+                                        }
+                                        self.connectionModel = connectionModel
+                                        self.getPresentationRequest(walletHandler: walletHandler, connectionModel: connectionModel, recipientKey: recipientKey, myKey: myVerKey,serviceEndPoint:serviceEndPoint)
                                     }
-                                    self.connectionModel = connectionModel
-                                    self.getPresentationRequest(walletHandler: walletHandler, connectionModel: connectionModel, recipientKey: recipientKey, myKey: myVerKey,serviceEndPoint:serviceEndPoint)
                                 }
                             }
                         }
-                    }
-                })
-            }
-        })
+                    })
+                }
+            })
         } else {
             self.acceptCertificate()
         }
-
+        
     }
     
     func getPresentationRequest(walletHandler: IndyHandle,connectionModel:CloudAgentConnectionWalletModel, recipientKey: String, myKey: String,serviceEndPoint:String ){
         SVProgressHUD.show()
         var attr = ProofExchangeAttributesArray()
         attr.items = attributelist
-        AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler, recipientKey: recipientKey, myVerKey: myKey, attributes: attr, type: .proposePresentation,isRoutingKeyEnabled: connectionModel.value?.routingKey != "",externalRoutingKey: connectionModel.value?.routingKey ?? "") {[unowned self] (success, data, error) in
+        AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler, recipientKey: recipientKey, myVerKey: myKey, attributes: attr, type: .proposePresentation,isRoutingKeyEnabled: connectionModel.value?.routingKey?.count ?? 0 > 0,externalRoutingKey: connectionModel.value?.routingKey ?? [],QR_ID: self.QR_ID) {[unowned self] (success, data, error) in
             NetworkManager.shared.baseURL = serviceEndPoint
             NetworkManager.shared.sendMsg(isMediator: false, msgData: data ?? Data()) { [unowned self](statuscode,responseData) in
-              
+                
                 AriesAgentFunctions.shared.unpackMessage(walletHandler: walletHandler, messageData: responseData ?? Data()) { [unowned self](unpackSuccess, unpackedData, error) in
                     if let recievedData = unpackedData {
                         if let messageModel = try? JSONSerialization.jsonObject(with: recievedData , options: []) as? [String : Any] {
@@ -293,32 +307,32 @@ class ExchangeDataPreviewViewModel{
             AriesAgentFunctions.shared.updateWalletRecord(walletHandler: walletHandler, type: .credentialExchange, id: self.reqDetail?.id ?? "",presentationReqModel:updateReq?.value) {[unowned self] (success, id, error) in
                 AriesAgentFunctions.shared.updateWalletTags(walletHandler: walletHandler, id: self.reqDetail?.id ?? "", type: .credentialExchange,threadId: updateReq?.value?.threadID ?? "" ,state:updateReq?.value?.state ?? "") {[unowned self] (success, error) in
                     AriesAgentFunctions.shared.getMyDidWithMeta(walletHandler: walletHandler, myDid: self.connectionModel?.value?.myDid ?? "") { [unowned self](getMetaSuccessfully, metadata, error) in
-                                                let metadataDict = UIApplicationUtils.shared.convertToDictionary(text: metadata ?? "")
+                        let metadataDict = UIApplicationUtils.shared.convertToDictionary(text: metadata ?? "")
                         print("Thread id --- \(self.reqDetail?.value?.threadID ?? "")" )
-                                                if let my_verKey = metadataDict?["verkey"] as? String{
-                                                    AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler, recipientKey: self.connectionModel?.value?.reciepientKey ?? "", myVerKey: my_verKey, threadId: self.reqDetail?.value?.threadID ?? "" , type: .presentation, isRoutingKeyEnabled: self.connectionModel?.value?.routingKey != "", externalRoutingKey : self.connectionModel?.value?.routingKey ?? "", presentation: updateReq?.value?.presentation) {[unowned self] (success, packedData, error) in
-                                                        AriesAgentFunctions.shared.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.cloudAgentConnectionInvitation, searchType: .searchWithId,record_id: self.connectionModel?.value?.requestID ?? "") { [unowned self](success, searchHandler, error) in
-                                                            AriesAgentFunctions.shared.fetchWalletSearchNextRecords(walletHandler: walletHandler, searchWalletHandler: searchHandler) {[unowned self] (searchSuccess, records, error) in
-                                                                let resultsDict = UIApplicationUtils.shared.convertToDictionary(text: records)
-                                                                let invitationRecord = (resultsDict?["records"] as? [[String: Any]])?.first
-                                                                let serviceEndPoint = (invitationRecord?["value"] as? [String: Any])?["serviceEndpoint"] as? String ?? ""
-                                                                _ = (invitationRecord?["value"] as? [String: Any])?["routing_key"] as? String ?? ""
-                                                                NetworkManager.shared.baseURL = serviceEndPoint
-                                                                NetworkManager.shared.sendMsg(isMediator: false, msgData: packedData ?? Data()) {[unowned self](statuscode,responseData) in
-                                                                   
-//                                                                    AriesAgentFunctions.shared.unpackMessage(walletHandler: walletHandler, messageData: responseData ?? Data()) { (unpackSuccess, unpackedData, error) in
-//                                                                        if unpackSuccess {
-                                                                            self.deleteWalletRecord()
-                                                                    UIApplicationUtils.showSuccessSnackbar(message: "Data shared successfully".localized())
-
-//                                                                        }
-//                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                        
-                                                    }
-                                            }
+                        if let my_verKey = metadataDict?["verkey"] as? String{
+                            AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler, recipientKey: self.connectionModel?.value?.reciepientKey ?? "", myVerKey: my_verKey, threadId: self.reqDetail?.value?.threadID ?? "" , type: .presentation, isRoutingKeyEnabled: self.connectionModel?.value?.routingKey?.count ?? 0 > 0, externalRoutingKey : self.connectionModel?.value?.routingKey ?? [], presentation: updateReq?.value?.presentation) {[unowned self] (success, packedData, error) in
+                                AriesAgentFunctions.shared.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.cloudAgentConnectionInvitation, searchType: .searchWithId,record_id: self.connectionModel?.value?.requestID ?? "") { [unowned self](success, searchHandler, error) in
+                                    AriesAgentFunctions.shared.fetchWalletSearchNextRecords(walletHandler: walletHandler, searchWalletHandler: searchHandler) {[unowned self] (searchSuccess, records, error) in
+                                        let resultsDict = UIApplicationUtils.shared.convertToDictionary(text: records)
+                                        let invitationRecord = (resultsDict?["records"] as? [[String: Any]])?.first
+                                        let serviceEndPoint = (invitationRecord?["value"] as? [String: Any])?["serviceEndpoint"] as? String ?? ""
+                                        _ = (invitationRecord?["value"] as? [String: Any])?["routing_key"] as? String ?? ""
+                                        NetworkManager.shared.baseURL = serviceEndPoint
+                                        NetworkManager.shared.sendMsg(isMediator: false, msgData: packedData ?? Data()) {[unowned self](statuscode,responseData) in
+                                            
+                                            //                                                                    AriesAgentFunctions.shared.unpackMessage(walletHandler: walletHandler, messageData: responseData ?? Data()) { (unpackSuccess, unpackedData, error) in
+                                            //                                                                        if unpackSuccess {
+                                            self.deleteWalletRecord()
+                                            UIApplicationUtils.showSuccessSnackbar(message: "Data shared successfully".localized())
+                                            
+                                            //                                                                        }
+                                            //                                                                    }
+                                        }
+                                    }
+                                }
+                                
+                            }
+                        }
                     }
                 }
             }
@@ -330,15 +344,15 @@ class ExchangeDataPreviewViewModel{
         AriesAgentFunctions.shared.deleteWalletRecord(walletHandler: walletHandler, type: AriesAgentFunctions.presentationExchange, id: reqDetail?.id ?? "") { [unowned self](success, error) in
             AriesAgentFunctions.shared.deleteWalletRecord(walletHandler: walletHandler, type: AriesAgentFunctions.inbox, id: self.inboxId ?? "") {[unowned self] (deletedSuccessfully, error) in
                 SVProgressHUD.dismiss()
-            if deletedSuccessfully {
-                self.delegate?.goBack()
-            } else {
-                if self.isFromQR{
+                if deletedSuccessfully {
                     self.delegate?.goBack()
-                    return
+                } else {
+                    if self.isFromQR{
+                        self.delegate?.goBack()
+                        return
+                    }
+                    self.delegate?.showError(message: "Failed to delete request from wallet record.".localized())
                 }
-                self.delegate?.showError(message: "Failed to delete request from wallet record.".localized())
-            }
             }
         }
     }
@@ -351,7 +365,7 @@ class ExchangeDataPreviewViewModel{
 
 //MARK: request-presentation
 extension ExchangeDataPreviewViewModel {
-
+    
     func requestPresentationRecieved(requestPresentationMessageModel: RequestPresentationMessageModel?,myVerKey: String,recipientKey: String) {
         let walletHandler = self.walletHandle ?? 0
         let base64String = requestPresentationMessageModel?.requestPresentationsAttach?.first?.data?.base64?.decodeBase64() ?? ""
@@ -362,26 +376,26 @@ extension ExchangeDataPreviewViewModel {
                 let recordResponse = UIApplicationUtils.shared.convertToDictionary(text: record,boolKeys: ["delete"])
                 let cloudAgentSearchConnectionModel = CloudAgentSearchConnectionModel.decode(withDictionary: recordResponse as NSDictionary? ?? NSDictionary()) as? CloudAgentSearchConnectionModel
                 if cloudAgentSearchConnectionModel?.totalCount ?? 0 > 0 {
-//                    AriesAgentFunctions.shared.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.presentationExchange,searchType:.searchWithThreadId, threadId: requestPresentationMessageModel?.id ?? "") { (success, prsntnExchngSearchWallet, error) in
-//                        AriesAgentFunctions.shared.fetchWalletSearchNextRecords(walletHandler: walletHandler, searchWalletHandler: prsntnExchngSearchWallet) { (success, response, error) in
-//                            let recordResponse = UIApplicationUtils.shared.convertToDictionary(text: response)
-//                            if (recordResponse?["totalCount"] as? Int ?? 0) > 0 {
-//                                return
-//                            }
-//                            let searchPresentationExchangeModel = SearchPresentationExchangeModel.decode(withDictionary: recordResponse as NSDictionary? ?? NSDictionary()) as? SearchPresentationExchangeModel
+                    //                    AriesAgentFunctions.shared.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.presentationExchange,searchType:.searchWithThreadId, threadId: requestPresentationMessageModel?.id ?? "") { (success, prsntnExchngSearchWallet, error) in
+                    //                        AriesAgentFunctions.shared.fetchWalletSearchNextRecords(walletHandler: walletHandler, searchWalletHandler: prsntnExchngSearchWallet) { (success, response, error) in
+                    //                            let recordResponse = UIApplicationUtils.shared.convertToDictionary(text: response)
+                    //                            if (recordResponse?["totalCount"] as? Int ?? 0) > 0 {
+                    //                                return
+                    //                            }
+                    //                            let searchPresentationExchangeModel = SearchPresentationExchangeModel.decode(withDictionary: recordResponse as NSDictionary? ?? NSDictionary()) as? SearchPresentationExchangeModel
                     print("Req Thread id --- \(requestPresentationMessageModel?.thread?.thid ?? "")" )
-                            let connectionModel = cloudAgentSearchConnectionModel?.records?.first
-                            var  presentationExchangeWalletModel = PresentationRequestWalletRecordModel.init()
+                    let connectionModel = cloudAgentSearchConnectionModel?.records?.first
+                    var  presentationExchangeWalletModel = PresentationRequestWalletRecordModel.init()
                     presentationExchangeWalletModel.threadID = requestPresentationMessageModel?.thread?.thid ?? ""
-                            presentationExchangeWalletModel.connectionID = connectionModel?.value?.requestID
-                            presentationExchangeWalletModel.createdAt = AgentWrapper.shared.getCurrentDateTime()
-                            presentationExchangeWalletModel.updatedAt = AgentWrapper.shared.getCurrentDateTime()
-                            presentationExchangeWalletModel.initiator = "external"
-                            presentationExchangeWalletModel.presentationRequest = presentationRequestModel
-                            presentationExchangeWalletModel.role = "prover"
-                            presentationExchangeWalletModel.state = "request_received"
-                            presentationExchangeWalletModel.autoPresent = true
-                            presentationExchangeWalletModel.trace = false
+                    presentationExchangeWalletModel.connectionID = connectionModel?.value?.requestID
+                    presentationExchangeWalletModel.createdAt = AgentWrapper.shared.getCurrentDateTime()
+                    presentationExchangeWalletModel.updatedAt = AgentWrapper.shared.getCurrentDateTime()
+                    presentationExchangeWalletModel.initiator = "external"
+                    presentationExchangeWalletModel.presentationRequest = presentationRequestModel
+                    presentationExchangeWalletModel.role = "prover"
+                    presentationExchangeWalletModel.state = "request_received"
+                    presentationExchangeWalletModel.autoPresent = true
+                    presentationExchangeWalletModel.trace = false
                     self.reqDetail = SearchPresentationExchangeValueModel()
                     self.reqDetail?.id = requestPresentationMessageModel?.id
                     self.reqDetail?.type = requestPresentationMessageModel?.type
@@ -394,12 +408,12 @@ extension ExchangeDataPreviewViewModel {
                         }
                         self.acceptCertificate()
                     }
-                        }
-                    }
                 }
             }
-//        }
-//    }
+        }
+    }
+    //        }
+    //    }
 }
 
 struct ProofCredentialValue:Codable {
@@ -414,6 +428,7 @@ struct ProofCredentialValue:Codable {
 
 struct ProofExchangeAttributes: Codable {
     var name: String?
+    var names: [String]?
     var value:String?
     var credDefId: String?
     var referent: String?

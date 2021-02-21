@@ -221,13 +221,14 @@ extension WalletViewController: QRScannerViewDelegate {
                     let newValue = "\(invitationURL.split(separator: "=").last ?? "")".decodeBase64() ?? ""
                     let newInvDict = UIApplicationUtils.shared.convertToDictionary(text: newValue)
                     let newQRModel = ExchangeDataQRCodeModel.decode(withDictionary: newInvDict as NSDictionary? ?? NSDictionary()) as? ExchangeDataQRCodeModel
+
                     SVProgressHUD.dismiss()
                     if newQRModel?.invitationURL == nil {
                         UIApplicationUtils.showErrorSnackbar(message: "Sorry, could not open scan content".localized())
                         return
                     }
                     if let controller = UIStoryboard(name:"AriesMobileAgent", bundle:UIApplicationUtils.shared.getResourcesBundle()).instantiateViewController( withIdentifier: "ExchangeDataPreviewViewController") as? ExchangeDataPreviewViewController {
-                        controller.viewModel = ExchangeDataPreviewViewModel.init(walletHandle: self.viewModel.walletHandle, reqDetail: nil,QRData: newQRModel,isFromQR: true,inboxId: nil,connectionModel: nil)
+                        controller.viewModel = ExchangeDataPreviewViewModel.init(walletHandle: self.viewModel.walletHandle, reqDetail: nil,QRData: newQRModel,isFromQR: true,inboxId: nil,connectionModel: nil,QR_ID: "\(code.split(separator: "/").last ?? "")")
                         self.navigationController?.pushViewController(controller, animated: true)
                     }
                     return

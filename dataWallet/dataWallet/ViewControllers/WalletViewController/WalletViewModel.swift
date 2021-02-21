@@ -351,11 +351,11 @@ extension WalletViewModel {
             self.connectionHelper.fetchWalletSearchNextRecords(walletHandler: walletHandler, searchWalletHandler: searchHandler) {[unowned self] (success, result, error) in
                 let resultDict = UIApplicationUtils.shared.convertToDictionary(text: result)
                 let count = resultDict?["totalCount"] as? Int ?? 0
-                if (count > 0){
+                if (count > 0) {
                     print("Cert Already added to wallet")
                     return
                 }
-                self.connectionHelper.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.cloudAgentConnection, searchType: .searchWithReciepientKey, reciepientKey: recipientKey) { [unowned self](Success, searchHandler, error) in
+                self.connectionHelper.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.cloudAgentConnection, searchType: .searchWithMyVerKey, myVerKey: verKey) { [unowned self](Success, searchHandler, error) in
                     self.connectionHelper.fetchWalletSearchNextRecords(walletHandler: walletHandler, searchWalletHandler: searchHandler) {[unowned self] (success, result, error) in
                         let resultDict = UIApplicationUtils.shared.convertToDictionary(text: result,boolKeys: ["delete"])
                         let requestArray = resultDict?["records"] as? [[String:Any]] ?? []
@@ -367,7 +367,7 @@ extension WalletViewModel {
                             print("cert offer record saved")
                             self.connectionHelper.addWalletRecord(threadID: certIssueModel.id ?? "",connectionRecordId: request_id,certIssueModel: certIssueModel, connectionModel: connectionModel,orgRecordId:recordId, walletHandler: walletHandler, type: .inbox) {[unowned self] (success, id, error) in
                                 NotificationCenter.default.post(Notification.init(name: Constants.didRecieveCertOffer))
-                                UIApplicationUtils.showSuccessSnackbar(message: "New certificate offer recieved".localized())
+                                UIApplicationUtils.showSuccessSnackbar(message: "New certificate offer recieved".localized(),navToNotifScreen:true)
                             }
                            
                 }
@@ -387,7 +387,7 @@ extension WalletViewModel {
         let base64Data = model?.credentialsAttach?.first?.data?.base64?.decodeBase64() ?? ""
         let credentialAttachDict = UIApplicationUtils.shared.convertToDictionary(text: base64Data)
         let credentialAttachModel = SearchCertificateRawCredential.decode(withDictionary: credentialAttachDict as NSDictionary? ?? NSDictionary()) as? SearchCertificateRawCredential
-        self.connectionHelper.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.cloudAgentConnection, searchType: .searchWithReciepientKey,reciepientKey: recipientKey) {[unowned self] (success, searchHandler, error) in
+        self.connectionHelper.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.cloudAgentConnection, searchType: .searchWithMyVerKey,myVerKey: myVerKey) {[unowned self] (success, searchHandler, error) in
             self.connectionHelper.fetchWalletSearchNextRecords(walletHandler: walletHandler, searchWalletHandler: searchHandler) {[unowned self] (success, record, error) in
                 let recordResponse = UIApplicationUtils.shared.convertToDictionary(text: record,boolKeys: ["delete"])
                 let records = recordResponse?["records"] as? [[String:Any]]
@@ -423,7 +423,7 @@ extension WalletViewModel {
                                                                                 if (fetchedSuccessfully) {
                                                                                     let resultDict = UIApplicationUtils.shared.convertToDictionary(text: results)
                                                                                     let didDocModel = SearchDidDocModel.decode(withDictionary: resultDict as NSDictionary? ?? NSDictionary()) as? SearchDidDocModel
-                                                                                    AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler,recipientKey: recipientKey, myVerKey: myKey, threadId: threadId, type: .credentialAck, isRoutingKeyEnabled: connectionDetailModel?.value?.routingKey != "",externalRoutingKey: connectionDetailModel?.value?.routingKey ?? "") {[unowned self] (success, data, error) in
+                                                                                    AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler,recipientKey: recipientKey, myVerKey: myKey, threadId: threadId, type: .credentialAck, isRoutingKeyEnabled: connectionDetailModel?.value?.routingKey?.count ?? 0 > 0,externalRoutingKey: connectionDetailModel?.value?.routingKey ?? []) {[unowned self] (success, data, error) in
                                                                                         
                                                                                         NetworkManager.shared.baseURL = didDocModel?.records?.first?.value?.service?.first?.serviceEndpoint ?? ""
                                                                                         NetworkManager.shared.sendMsg(isMediator: false, msgData: data ?? Data()) { [unowned self] (statuscode,responseData) in
@@ -505,7 +505,7 @@ extension WalletViewModel {
         let base64String = requestPresentationMessageModel?.requestPresentationsAttach?.first?.data?.base64?.decodeBase64() ?? ""
         let base64DataDict = UIApplicationUtils.shared.convertToDictionary(text: base64String)
         let presentationRequestModel = PresentationRequestModel.decode(withDictionary: base64DataDict as NSDictionary? ?? NSDictionary()) as? PresentationRequestModel
-        self.connectionHelper.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.cloudAgentConnection, searchType: .searchWithReciepientKey,reciepientKey: recipientKey) { [unowned self](success, searchHandler, error) in
+        self.connectionHelper.openWalletSearch_type(walletHandler: walletHandler, type: AriesAgentFunctions.cloudAgentConnection, searchType: .searchWithMyVerKey,myVerKey: myVerKey) { [unowned self](success, searchHandler, error) in
             self.connectionHelper.fetchWalletSearchNextRecords(walletHandler: walletHandler, searchWalletHandler: searchHandler) {[unowned self] (success, record, error) in
                 let recordResponse = UIApplicationUtils.shared.convertToDictionary(text: record,boolKeys: ["delete"])
                 let cloudAgentSearchConnectionModel = CloudAgentSearchConnectionModel.decode(withDictionary: recordResponse as NSDictionary? ?? NSDictionary()) as? CloudAgentSearchConnectionModel
@@ -534,7 +534,7 @@ extension WalletViewModel {
                                 self.connectionHelper.addWalletRecord(connectionRecordId: connectionModel?.value?.requestID, presentationExchangeModel:presentationExchangeWalletModel, connectionModel: connectionModel,orgRecordId:recordId,  walletHandler: walletHandler, type: .inbox) { [unowned self](success, id, error) in
                                     print("Add wallet record - Presentation Request")
                                     NotificationCenter.default.post(name: Constants.didRecieveDataExchangeRequest, object: nil)
-                                    UIApplicationUtils.showSuccessSnackbar(message: "New exchange data request recieved".localized())
+                                    UIApplicationUtils.showSuccessSnackbar(message: "New exchange data request recieved".localized(),navToNotifScreen:true)
                                 }
                             }
                         }

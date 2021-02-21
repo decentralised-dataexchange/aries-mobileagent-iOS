@@ -48,7 +48,11 @@ class WalletCertificateDetailViewModel {
                                     NetworkManager.shared.baseURL = serviceEndPoint
                                 AriesAgentFunctions.shared.packMessage(walletHandler: walletHandler, recipientKey: self.certModel?.value?.connectionInfo?.value?.reciepientKey ?? "", myVerKey: verKey, type: .getIgrantOrgDetail,isRoutingKeyEnabled: false) {[unowned self] (success, orgPackedData, error) in
                                     NetworkManager.shared.sendMsg(isMediator: false, msgData: orgPackedData ?? Data()) { [unowned self](statuscode,orgServerResponseData) in
-                                       
+                                        if statuscode != 200 {
+                                            completion(true)
+                                            SVProgressHUD.dismiss()
+                                           return
+                                        }
                                         AriesAgentFunctions.shared.unpackMessage(walletHandler: walletHandler, messageData: orgServerResponseData ?? Data()) {[unowned self] (unpackedSuccessfully, orgDetailsData, error) in
                                             if let messageModel = try? JSONSerialization.jsonObject(with: orgDetailsData ?? Data(), options: []) as? [String : Any] {
                                                 print("unpackmsg -- \(messageModel)")
