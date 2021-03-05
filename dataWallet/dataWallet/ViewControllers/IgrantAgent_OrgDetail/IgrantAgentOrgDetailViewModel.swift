@@ -20,7 +20,7 @@ class IgrantAgentOrgDetailViewModel {
     var orgCertListModel: OrganisationListDataCERTModel?
     weak var delegate: IgrantAgentOrgDetailViewModelDelegate?
     var isiGrantOrg: Bool = false
-    private var connectionModel: CloudAgentConnectionWalletModel?
+    var connectionModel: CloudAgentConnectionWalletModel?
     private var connectionInvitationRecordId: String?
 
     init(walletHandle: IndyHandle?,reqId: String?,isiGrantOrg: Bool?) {
@@ -38,6 +38,7 @@ class IgrantAgentOrgDetailViewModel {
                 let searchConnModel = CloudAgentSearchConnectionModel.decode(withDictionary: resultsDict as NSDictionary? ?? NSDictionary()) as? CloudAgentSearchConnectionModel
                 let connModel = searchConnModel?.records?.first
                 self.connectionModel = connModel
+                completion(true)  // reaload view with connection data
                 AriesAgentFunctions.shared.getMyDidWithMeta(walletHandler: walletHandler, myDid: connModel?.value?.myDid ?? "", completion: { [unowned self](metadataRecieved,metadata, error) in
                     let metadataDict = UIApplicationUtils.shared.convertToDictionary(text: metadata ?? "")
                     if let verKey = metadataDict?["verkey"] as? String{

@@ -11,7 +11,7 @@ class LedgerListViewController: AriesBaseViewController {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var heightConstraint: NSLayoutConstraint!
-    public static var ledgers = [Constants.ledger_igrant_sandbox,Constants.ledger_igrant_old_sandbox, Constants.ledger_sovrin_builder, Constants.ledger_sovrin_live, Constants.ledger_sovrin_sandbox]
+    public static var ledgers = [Constants.ledger_igrant_sandbox, Constants.ledger_sovrin_builder, Constants.ledger_sovrin_live, Constants.ledger_sovrin_sandbox]
 
     override func viewDidLoad() {
         super.viewDidLoad()

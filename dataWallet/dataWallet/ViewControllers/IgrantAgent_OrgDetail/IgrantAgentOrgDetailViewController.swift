@@ -113,10 +113,10 @@ extension IgrantAgentOrgDetailViewController: UITableViewDelegate,UITableViewDat
         if  indexPath.section == 0{
             if indexPath.row == 0{
                 let orgCell = tableView.dequeueReusableCell(withIdentifier:"OrgImageTableViewCell",for: indexPath) as! OrgImageTableViewCell
-                orgCell.nameLbl.text = viewModel?.orgInfo?.name ?? ""
+                orgCell.nameLbl.text = viewModel?.orgInfo?.name ?? (viewModel?.connectionModel?.value?.theirLabel ?? "")
                 orgCell.locationLbl.text = viewModel?.orgInfo?.location ?? ""
-                UIApplicationUtils.shared.setRemoteImageOn(orgCell.logoImageView, url: viewModel?.orgInfo?.logoImageURL)
-                UIApplicationUtils.shared.setRemoteImageOn(orgCell.orgImageView, url: viewModel?.orgInfo?.coverImageURL,placeholderImage: #imageLiteral(resourceName: "00_Default_CoverImage_02-min"))
+                UIApplicationUtils.shared.setRemoteImageOn(orgCell.logoImageView, url: viewModel?.orgInfo?.logoImageURL ?? (viewModel?.connectionModel?.value?.imageURL ?? ""))
+                UIApplicationUtils.shared.setRemoteImageOn(orgCell.orgImageView, url: viewModel?.orgInfo?.coverImageURL ?? (viewModel?.connectionModel?.value?.orgDetails?.coverImageURL ?? ""),placeholderImage: #imageLiteral(resourceName: "00_Default_CoverImage_02-min"))
                 return orgCell
             }else{
                 let orgOverViewCell = tableView.dequeueReusableCell(withIdentifier:"OrgOverViewTableViewCell",for: indexPath) as! OrgOverViewTableViewCell
@@ -139,7 +139,7 @@ extension IgrantAgentOrgDetailViewController: UITableViewDelegate,UITableViewDat
 //                    orgOverViewCell.overViewLbl.numberOfLines = 0
                 }
                 orgOverViewCell.overViewLbl.textReplacementType = .word
-                if let desc = viewModel?.orgInfo?.organisationInfoModelDescription{
+                if let desc = viewModel?.orgInfo?.organisationInfoModelDescription ?? (viewModel?.connectionModel?.value?.orgDetails?.organisationInfoModelDescription){
                     orgOverViewCell.overViewLbl.text = desc
 //                    orgOverViewCell.overViewLbl.setHTMLFromString(text: "Aksjdh khaksjdh ksa dkhksadh  khadkjhsa kd kahsdkjashd kah dskh sakdh \n askdh kasd kadkhsakjdh ksajhd  kahsdkhsakjdhksa hdksha kdhaskj d \n \n akdhskjdhkasdh kasdhkjashdkjhsa dkashdkjsad ksahdkjashd ksa hdksa ksahdkjsahdkjsahdkjhsakjdhkasjhdkjsahd ksajhdksah dkhsakjdh ksajdksah dksadkhskajhd kjsahdkshakd h kashdk\n dashgdashgdgsadggasdgj")
 //                    orgOverViewCell.overViewLbl.text = "Aksjdh khaksjdh ksa dkhksadh  khadkjhsa kd kahsdkjashd kah dskh sakdh \n askdh kasd kadkhsakjdh ksajhd  kahsdkhsakjdhksa hdksha kdhaskj d \n \n akdhskjdhkasdh kasdhkjashdkjhsa dkashdkjsad ksahdkjashd ksa hdksa ksahdkjsahdkjsahdkjhsakjdhkasjhdkjsahd ksajhdksah dkhsakjdh ksajdksah dksadkhskajhd kjsahdkshakd h kashdk\n dashgdashgdgsadggasdgj"

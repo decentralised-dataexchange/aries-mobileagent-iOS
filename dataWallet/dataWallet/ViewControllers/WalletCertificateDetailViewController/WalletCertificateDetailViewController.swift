@@ -70,7 +70,7 @@ class WalletCertificateDetailViewController: AriesBaseViewController,UITableView
                 orgCell.nameLbl.text = viewModel?.orgInfo?.name ?? (viewModel?.certModel?.value?.connectionInfo?.value?.theirLabel ?? "")
                 orgCell.locationLbl.text = viewModel?.orgInfo?.location ?? ""
                 UIApplicationUtils.shared.setRemoteImageOn(orgCell.logoImageView, url: viewModel?.orgInfo?.logoImageURL ?? (viewModel?.certModel?.value?.connectionInfo?.value?.imageURL ?? ""))
-                UIApplicationUtils.shared.setRemoteImageOn(orgCell.orgImageView, url: viewModel?.orgInfo?.coverImageURL,placeholderImage: #imageLiteral(resourceName: "00_Default_CoverImage_02-min"))
+                UIApplicationUtils.shared.setRemoteImageOn(orgCell.orgImageView, url: viewModel?.orgInfo?.coverImageURL ?? (viewModel?.certModel?.value?.connectionInfo?.value?.orgDetails?.coverImageURL ?? ""),placeholderImage: #imageLiteral(resourceName: "00_Default_CoverImage_02-min"))
                 orgCell.selectionStyle = .none
                 return orgCell
             case 1:

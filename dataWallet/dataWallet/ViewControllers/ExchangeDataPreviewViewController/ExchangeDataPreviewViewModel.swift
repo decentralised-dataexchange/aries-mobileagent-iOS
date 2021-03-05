@@ -36,6 +36,7 @@ class ExchangeDataPreviewViewModel{
         self.isFromQR = isFromQR ?? false
         self.inboxId = inboxId
         self.connectionModel = connectionModel
+        self.QR_ID = QR_ID
     }
     
     func getCredsForProof(forceReqDetail: Bool? = false,completion : @escaping(Bool)-> Void) {
