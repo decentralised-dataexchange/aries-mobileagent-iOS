@@ -324,7 +324,7 @@ class ExchangeDataPreviewViewModel{
                                             //                                                                    AriesAgentFunctions.shared.unpackMessage(walletHandler: walletHandler, messageData: responseData ?? Data()) { (unpackSuccess, unpackedData, error) in
                                             //                                                                        if unpackSuccess {
                                             self.deleteWalletRecord()
-                                            UIApplicationUtils.showSuccessSnackbar(message: "Data shared successfully".localized())
+                                            UIApplicationUtils.showSuccessSnackbar(message: "Data has been shared successfully".localized())
                                             
                                             //                                                                        }
                                             //                                                                    }

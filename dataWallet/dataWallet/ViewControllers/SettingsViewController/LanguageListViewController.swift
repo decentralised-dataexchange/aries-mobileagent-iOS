@@ -11,9 +11,9 @@ import Localize_Swift
 class LanguageListViewController: AriesBaseViewController {
 
     @IBOutlet weak var tableView: UITableView!
-    public static var language = ["English", "Svenska", "Dansk"]
+    public static var language = ["English", "Svenska", "Dansk", "Suomi"]
     @IBOutlet weak var heightConstraint: NSLayoutConstraint!
-    var languageCode = ["en", "sv", "da"]
+    var languageCode = ["en", "sv", "da", "fi"]
     
     override func viewDidLoad() {
         super.viewDidLoad()

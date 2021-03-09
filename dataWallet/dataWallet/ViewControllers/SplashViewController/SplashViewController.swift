@@ -48,7 +48,6 @@ class SplashViewController: AriesBaseViewController {
                 model.checkMediatorConnectionAvailable()
                 self.loadingStatus.text = "Configuring pool...".localized()
                 AriesPoolHelper.shared.configurePool(walletHandler: indyHandle,completion: completion)
-                model.getSavedCertificates()
             }
         }
     }

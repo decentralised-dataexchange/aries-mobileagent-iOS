@@ -96,6 +96,7 @@
 "About this app" = "Om denne app";
 "Received Data" = "Modtog data / digital certifikat";
 "Received Offer Credential" = "Modtog bevis for dataudvekslingstilbud.";
+"New certificate offer recieved" = "Modtog bevis for dataudvekslingstilbud.";
 "Received offer credential from organisation." = "Modtog bevis for dataudvekslingstilbud fra <org>.";
 "Received Exchange Request" = "Modtog dataudvekslingsforslag.";
 "Terms of service" = "Vilkår for anvendelse";

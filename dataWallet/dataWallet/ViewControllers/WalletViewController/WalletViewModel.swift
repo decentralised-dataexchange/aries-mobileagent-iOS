@@ -9,7 +9,7 @@ import Foundation
 import SVProgressHUD
 
 protocol WalletDelegate: class {
-    func walletDataUpdated()
+    func walletDataUpdated(itemCount: Int)
 }
 
 class WalletViewModel{
@@ -39,7 +39,7 @@ class WalletViewModel{
                 let certSearchModel = Search_CustomWalletRecordCertModel.decode(withDictionary: responseDict as NSDictionary? ?? NSDictionary()) as? Search_CustomWalletRecordCertModel
                 self.certificates = certSearchModel?.records ?? []
                 self.searchCert = certSearchModel?.records ?? []
-                self.delegate?.walletDataUpdated()
+                self.delegate?.walletDataUpdated(itemCount: self.certificates.count)
                 print("wallet credentials fetched")
             }
         }
@@ -57,7 +57,7 @@ class WalletViewModel{
     func updateSearchedItems(searchString: String){
         if searchString == "" {
             self.searchCert = certificates
-            delegate?.walletDataUpdated()
+            delegate?.walletDataUpdated(itemCount: self.certificates.count)
             return
         }
         let filteredArray = self.certificates.filter({ (item) -> Bool in
@@ -66,7 +66,7 @@ class WalletViewModel{
             return (name.contains(searchString))
         })
         self.searchCert = filteredArray
-        delegate?.walletDataUpdated()
+        delegate?.walletDataUpdated(itemCount: self.certificates.count)
         return
     }
     

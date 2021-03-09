@@ -50,6 +50,7 @@ class WalletViewController: AriesBaseViewController,WalletDelegate{
         searchBarBgView.layer.cornerRadius = 8
         searchBar.removeBg()
         self.tableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
+        self.viewModel.getSavedCertificates()
     }
     
     override func localizableValues() {
@@ -86,9 +87,14 @@ class WalletViewController: AriesBaseViewController,WalletDelegate{
         self.initaiateNewExchangeData()
     }
     
-    func walletDataUpdated() {
+    func walletDataUpdated(itemCount: Int) {
         self.tableView.reloadData()
         checkNewNotif()
+        if itemCount == 0 {
+            self.exchangeButton.isHidden = true
+        } else {
+            self.exchangeButton.isHidden = false
+        }
     }
     
     @IBAction func addNewCertificate(_ sender: Any) {

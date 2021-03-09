@@ -125,6 +125,8 @@
 		0E03796C25B5F30E00845247 /* SearchInboxModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchInboxModel.swift; sourceTree = "<group>"; };
 		0E03797025B69A5D00845247 /* NotificationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTableViewCell.swift; sourceTree = "<group>"; };
 		0E03797725B7003C00845247 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
+		0E3A68EC25F67DF00045638A /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		0E3A68ED25F67DF10045638A /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0E5C158D25AC20D500BC75EB /* dataWallet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dataWallet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E5C159025AC20D500BC75EB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0E5C159225AC20D500BC75EB /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -798,6 +800,7 @@
 				Base,
 				sv,
 				da,
+				fi,
 			);
 			mainGroup = 0E5C158425AC20D500BC75EB;
 			productRefGroup = 0E5C158E25AC20D500BC75EB /* Products */;
@@ -1006,6 +1009,7 @@
 				0E5C159F25AC20D700BC75EB /* Base */,
 				0E979F6C25B4986F00749E94 /* sv */,
 				0E93FA2B25D0F5A300E78BDD /* da */,
+				0E3A68EC25F67DF00045638A /* fi */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -1016,6 +1020,7 @@
 				0E979F6925B4981A00749E94 /* en */,
 				0E979F6D25B4987000749E94 /* sv */,
 				0E93FA2C25D0F5A400E78BDD /* da */,
+				0E3A68ED25F67DF10045638A /* fi */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -1148,7 +1153,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = Y9726WB7V8;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -1176,7 +1181,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = Y9726WB7V8;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
